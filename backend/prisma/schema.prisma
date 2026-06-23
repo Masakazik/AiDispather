@@ -1,0 +1,108 @@
+// ДомДиспетчер — Prisma schema
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  DISPATCHER
+  TECHNICIAN
+  RESIDENT
+}
+
+enum RequestStatus {
+  NEW
+  IN_PROGRESS
+  ON_HOLD
+  DONE
+  CANCELLED
+}
+
+enum RequestPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  firstName    String?  @map("first_name")
+  lastName     String?  @map("last_name")
+  phone        String?
+  role         UserRole @default(DISPATCHER)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  assignedRequests ServiceRequest[] @relation("AssignedTo")
+  createdRequests  ServiceRequest[] @relation("CreatedBy")
+
+  @@map("users")
+}
+
+model Building {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  city      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  apartments Apartment[]
+  requests   ServiceRequest[]
+
+  @@map("buildings")
+}
+
+model Apartment {
+  id         String   @id @default(uuid())
+  number     String
+  floor      Int?
+  buildingId String   @map("building_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  building Building         @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  requests ServiceRequest[]
+
+  @@unique([buildingId, number])
+  @@map("apartments")
+}
+
+model ServiceRequest {
+  id          String          @id @default(uuid())
+  title       String
+  description String?
+  status      RequestStatus   @default(NEW)
+  priority    RequestPriority @default(MEDIUM)
+
+  buildingId  String?    @map("building_id")
+  apartmentId String?    @map("apartment_id")
+  assignedToId String?   @map("assigned_to_id")
+  createdById  String?   @map("created_by_id")
+
+  building   Building?  @relation(fields: [buildingId], references: [id], onDelete: SetNull)
+  apartment  Apartment? @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+  assignedTo User?      @relation("AssignedTo", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy  User?      @relation("CreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  dueAt       DateTime? @map("due_at")
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  @@index([status])
+  @@index([priority])
+  @@index([assignedToId])
+  @@map("service_requests")
+}

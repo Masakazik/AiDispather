@@ -1,0 +1,305 @@
+/* ===== App shell ===== */
+.app-shell {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg-app);
+}
+.app-shell__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.app-shell__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+}
+.app-shell__overlay {
+  display: none;
+}
+
+/* ===== Sidebar ===== */
+.app-sidebar {
+  width: var(--sidebar-w);
+  flex: none;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-card);
+  border-right: 1px solid var(--divider);
+}
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 20px 16px;
+}
+.app-sidebar__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--hd-blue-600);
+}
+.app-sidebar__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+.app-sidebar__title-accent {
+  color: var(--text-brand);
+}
+.app-sidebar__nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 12px 12px;
+}
+.app-sidebar__section {
+  margin-bottom: 6px;
+}
+.app-sidebar__section-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  padding: 14px 12px 6px;
+}
+.app-sidebar__link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 11px;
+  margin-bottom: 2px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: var(--transition-colors);
+}
+.app-sidebar__link:hover {
+  background: var(--bg-subtle);
+  color: var(--text-primary);
+}
+.app-sidebar__link--active {
+  background: var(--action-soft-bg);
+  color: var(--action-soft-fg);
+}
+.app-sidebar__link-icon {
+  flex: none;
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+.app-sidebar__link-label {
+  flex: 1;
+}
+.app-sidebar__link-count {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-subtle);
+  color: var(--text-secondary);
+}
+.app-sidebar__link--active .app-sidebar__link-count {
+  background: var(--hd-blue-100);
+  color: var(--action-soft-fg);
+}
+.app-sidebar__footer {
+  border-top: 1px solid var(--divider);
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.app-sidebar__footer-info {
+  flex: 1;
+  min-width: 0;
+}
+.app-sidebar__footer-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-sidebar__footer-role {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.app-sidebar__footer-gear {
+  display: inline-flex;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+/* ===== Topbar ===== */
+.app-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: var(--topbar-h);
+  flex: none;
+  padding: 0 28px;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--divider);
+}
+.app-topbar__toggle {
+  display: none;
+}
+.app-topbar__titles {
+  min-width: 0;
+}
+.app-topbar__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.app-topbar__subtitle {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.app-topbar__spacer {
+  flex: 1;
+}
+.app-topbar__search {
+  width: 220px;
+}
+.app-topbar__ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--ai-surface);
+  border: 1px solid var(--hd-blue-200);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hd-blue-700);
+}
+.app-topbar__ai-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--status-success-solid);
+  animation: hd-pulse 2s ease-in-out infinite;
+}
+.app-topbar__bell {
+  position: relative;
+}
+.app-topbar__bell-badge {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--status-error-solid);
+  border: 2px solid var(--surface-card);
+}
+.app-topbar__avatar-btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+}
+
+/* ===== Page primitives ===== */
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: var(--content-max);
+}
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+.page-header__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+.page-header__subtitle {
+  margin: 2px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 992px) {
+  .app-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform var(--dur-base) var(--ease-standard);
+  }
+  .app-sidebar--open {
+    transform: translateX(0);
+    box-shadow: var(--shadow-lg);
+  }
+  .app-shell__overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 33, 78, 0.4);
+    z-index: 35;
+  }
+  .app-topbar__toggle {
+    display: inline-flex;
+  }
+  .app-topbar__search {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell__content {
+    padding: 16px;
+  }
+  .app-topbar {
+    padding: 0 16px;
+    gap: 10px;
+  }
+  .app-topbar__ai span:last-child {
+    display: none;
+  }
+  .app-topbar__ai {
+    padding: 0 9px;
+  }
+}

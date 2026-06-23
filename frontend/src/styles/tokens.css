@@ -1,0 +1,177 @@
+/* ============================================================
+   ДомДиспетчер — Design tokens (ported from the source design system)
+   Blue is the brand. Red is reserved strictly for errors,
+   emergency requests, and critical alerts.
+   ============================================================ */
+
+:root {
+  /* ---- Brand: Rich Blue ---- */
+  --hd-blue-50: #eef3ff;
+  --hd-blue-100: #dde7ff;
+  --hd-blue-200: #bccdff;
+  --hd-blue-300: #93acff;
+  --hd-blue-400: #5e84f6;
+  --hd-blue-500: #3a64ec;
+  --hd-blue-600: #2553e0; /* primary */
+  --hd-blue-700: #1c41b4;
+  --hd-blue-800: #18347f;
+  --hd-blue-900: #11214e;
+
+  /* ---- Secondary: Light Blue ---- */
+  --hd-sky-50: #f2f7ff;
+  --hd-sky-100: #e6f0ff;
+  --hd-sky-200: #d2e4ff;
+  --hd-sky-300: #b3d2ff;
+
+  /* ---- Neutral / Gray ---- */
+  --hd-neutral-0: #ffffff;
+  --hd-neutral-25: #fbfcfe;
+  --hd-neutral-50: #f6f8fb;
+  --hd-neutral-100: #eef1f6;
+  --hd-neutral-200: #e3e8f0;
+  --hd-neutral-300: #d3dae6;
+  --hd-neutral-400: #aab4c5;
+  --hd-neutral-500: #8590a3;
+  --hd-neutral-600: #5f6b80;
+  --hd-neutral-700: #424b5c;
+  --hd-neutral-800: #2b3340;
+  --hd-neutral-900: #1a1f29;
+
+  /* ---- Success: Green ---- */
+  --hd-green-50: #ecf7f0;
+  --hd-green-100: #d4ecdd;
+  --hd-green-200: #a8dabb;
+  --hd-green-500: #2f9e5d;
+  --hd-green-600: #1f8a4c;
+  --hd-green-700: #176c3c;
+
+  /* ---- Warning: Amber ---- */
+  --hd-amber-50: #fef6e9;
+  --hd-amber-100: #fce8c6;
+  --hd-amber-200: #f8d28a;
+  --hd-amber-500: #e79a16;
+  --hd-amber-600: #c47f0b;
+  --hd-amber-700: #97620a;
+
+  /* ---- Error: Red ---- */
+  --hd-red-50: #fdecec;
+  --hd-red-100: #fad6d6;
+  --hd-red-200: #f3adad;
+  --hd-red-500: #e0413f;
+  --hd-red-600: #cc2f2d;
+  --hd-red-700: #a62220;
+
+  /* ---- Info ---- */
+  --hd-info-50: var(--hd-blue-50);
+  --hd-info-100: var(--hd-blue-100);
+  --hd-info-500: var(--hd-blue-500);
+  --hd-info-600: var(--hd-blue-600);
+
+  /* ---- Semantic surfaces & background ---- */
+  --bg-app: var(--hd-neutral-50);
+  --bg-subtle: var(--hd-neutral-100);
+  --surface-card: var(--hd-neutral-0);
+  --surface-raised: var(--hd-neutral-0);
+  --surface-sunken: var(--hd-neutral-50);
+  --surface-inverse: var(--hd-neutral-900);
+  --surface-brand-subtle: var(--hd-blue-50);
+
+  /* ---- Text ---- */
+  --text-primary: var(--hd-neutral-800);
+  --text-secondary: var(--hd-neutral-500);
+  --text-tertiary: var(--hd-neutral-400);
+  --text-disabled: var(--hd-neutral-300);
+  --text-on-brand: var(--hd-neutral-0);
+  --text-brand: var(--hd-blue-600);
+  --text-link: var(--hd-blue-600);
+
+  /* ---- Borders & dividers ---- */
+  --border-subtle: var(--hd-neutral-200);
+  --border-default: var(--hd-neutral-300);
+  --border-strong: var(--hd-neutral-400);
+  --border-brand: var(--hd-blue-600);
+  --divider: var(--hd-neutral-200);
+
+  /* ---- Actions ---- */
+  --action-primary-bg: var(--hd-blue-600);
+  --action-primary-bg-hover: var(--hd-blue-700);
+  --action-primary-bg-active: var(--hd-blue-800);
+  --action-primary-fg: var(--hd-neutral-0);
+  --action-primary-ring: var(--hd-blue-200);
+
+  --action-secondary-bg: var(--hd-neutral-0);
+  --action-secondary-bg-hover: var(--hd-neutral-100);
+  --action-secondary-fg: var(--hd-neutral-800);
+  --action-secondary-border: var(--hd-neutral-300);
+
+  --action-soft-bg: var(--hd-blue-50);
+  --action-soft-bg-hover: var(--hd-blue-100);
+  --action-soft-fg: var(--hd-blue-700);
+
+  --focus-ring: var(--hd-blue-400);
+
+  /* ---- Status triplets ---- */
+  --status-success-fg: var(--hd-green-700);
+  --status-success-bg: var(--hd-green-50);
+  --status-success-border: var(--hd-green-200);
+  --status-success-solid: var(--hd-green-600);
+
+  --status-warning-fg: var(--hd-amber-700);
+  --status-warning-bg: var(--hd-amber-50);
+  --status-warning-border: var(--hd-amber-200);
+  --status-warning-solid: var(--hd-amber-500);
+
+  --status-error-fg: var(--hd-red-700);
+  --status-error-bg: var(--hd-red-50);
+  --status-error-border: var(--hd-red-200);
+  --status-error-solid: var(--hd-red-600);
+
+  --status-info-fg: var(--hd-blue-700);
+  --status-info-bg: var(--hd-blue-50);
+  --status-info-border: var(--hd-blue-200);
+  --status-info-solid: var(--hd-blue-600);
+
+  /* ---- AI accent ---- */
+  --ai-accent: var(--hd-blue-600);
+  --ai-surface: var(--hd-blue-50);
+  --ai-glow: rgba(37, 83, 224, 0.14);
+
+  /* ---- Typography ---- */
+  --font-display: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---- Radius ---- */
+  --radius-xs: 6px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-card: 20px;
+  --radius-modal: 24px;
+  --radius-full: 999px;
+  --radius-button: var(--radius-md);
+  --radius-input: var(--radius-md);
+
+  /* ---- Elevation ---- */
+  --shadow-xs: 0 1px 2px rgba(26, 31, 41, 0.04);
+  --shadow-sm: 0 1px 3px rgba(26, 31, 41, 0.05), 0 1px 2px rgba(26, 31, 41, 0.03);
+  --shadow-md: 0 4px 12px rgba(26, 31, 41, 0.06), 0 1px 3px rgba(26, 31, 41, 0.04);
+  --shadow-lg: 0 12px 28px rgba(26, 31, 41, 0.08), 0 2px 6px rgba(26, 31, 41, 0.04);
+  --shadow-modal: 0 24px 60px rgba(17, 33, 78, 0.16), 0 4px 12px rgba(17, 33, 78, 0.08);
+
+  /* ---- Spacing ---- */
+  --content-max: 1440px;
+  --sidebar-w: 264px;
+  --topbar-h: 64px;
+
+  /* ---- Motion ---- */
+  --dur-fast: 150ms;
+  --dur-base: 200ms;
+  --dur-slow: 250ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-colors:
+    background-color var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}

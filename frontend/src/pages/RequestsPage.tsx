@@ -1,0 +1,204 @@
+import { useMemo } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { Badge, Avatar, Button, Select, SearchInput, Tabs, type SelectOption } from '@/components/ui';
+import { useDispatchStore } from '@/store/dispatch.store';
+import { BUILDINGS, COLUMNS, EMPLOYEES, PRIO, STATUS, TICKETS } from '@/features/dispatch/data';
+import { assigneeShortName, decorateTicket, type DecoratedTicket } from '@/features/dispatch/selectors';
+import { TicketCard } from '@/features/dispatch/components/TicketCard';
+import { TicketGridCard } from '@/features/dispatch/components/TicketGridCard';
+import type { TicketPriority, TicketStatus } from '@/types/dispatch';
+
+const VIEW_TABS = [
+  { id: 'kanban', label: 'Канбан' },
+  { id: 'table', label: 'Таблица' },
+  { id: 'grid', label: 'Карточки' },
+];
+
+export default function RequestsPage() {
+  const {
+    search,
+    priority,
+    statusFilter,
+    buildingFilter,
+    assigneeFilter,
+    view,
+    setSearch,
+    setPriority,
+    setStatusFilter,
+    setBuildingFilter,
+    setAssigneeFilter,
+    setView,
+    openTicket,
+  } = useDispatchStore();
+
+  const list = useMemo<DecoratedTicket[]>(() => {
+    const q = search.trim().toLowerCase();
+    return TICKETS.filter((t) => {
+      if (priority !== 'all' && t.priority !== priority) return false;
+      if (statusFilter !== 'all' && t.status !== statusFilter) return false;
+      if (buildingFilter !== 'all' && t.bId !== buildingFilter) return false;
+      if (assigneeFilter !== 'all' && t.assignee !== assigneeFilter) return false;
+      if (q) {
+        const hay = `${t.title} ${t.num} ${t.resident} ${t.tags.join(' ')} ${t.category}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    }).map(decorateTicket);
+  }, [search, priority, statusFilter, buildingFilter, assigneeFilter]);
+
+  const count = (p: TicketPriority | 'all') =>
+    TICKETS.filter((t) => (p === 'all' ? true : t.priority === p)).length;
+
+  const priorityTabs = [
+    { id: 'all', label: 'Все', count: count('all') },
+    { id: 'critical', label: 'Критичные', count: count('critical') },
+    { id: 'high', label: 'Высокий', count: count('high') },
+    { id: 'medium', label: 'Средний', count: count('medium') },
+    { id: 'low', label: 'Низкий', count: count('low') },
+  ];
+
+  const buildingOptions: SelectOption[] = [
+    { value: 'all', label: 'Все дома' },
+    ...BUILDINGS.map((b) => ({ value: b.id, label: `${b.name.replace('ЖК ', '')}, ${b.corp}` })),
+  ];
+  const statusOptions: SelectOption[] = [
+    { value: 'all', label: 'Все статусы' },
+    ...(Object.keys(STATUS) as TicketStatus[]).map((k) => ({ value: k, label: STATUS[k].label })),
+  ];
+  const assigneeOptions: SelectOption[] = [
+    { value: 'all', label: 'Все исполнители' },
+    ...EMPLOYEES.map((e) => ({ value: assigneeShortName(e.name), label: e.name })),
+  ];
+
+  return (
+    <div className="page requests-page">
+      {/* Filters */}
+      <div className="requests-filters">
+        <div className="requests-filters__search">
+          <SearchInput
+            placeholder="Поиск по заявкам, жителям, тегам…"
+            value={search}
+            onChange={setSearch}
+          />
+        </div>
+        <div className="requests-filters__select requests-filters__select--building">
+          <Select options={buildingOptions} value={buildingFilter} onChange={setBuildingFilter} />
+        </div>
+        <div className="requests-filters__select">
+          <Select options={statusOptions} value={statusFilter} onChange={(v) => setStatusFilter(v as TicketStatus | 'all')} />
+        </div>
+        <div className="requests-filters__select requests-filters__select--assignee">
+          <Select options={assigneeOptions} value={assigneeFilter} onChange={setAssigneeFilter} />
+        </div>
+        <div className="requests-filters__spacer" />
+        <Button variant="primary">+ Новая заявка</Button>
+      </div>
+
+      {/* Priority + view tabs */}
+      <div className="requests-tabs">
+        <Tabs tabs={priorityTabs} value={priority} onChange={(id) => setPriority(id as TicketPriority | 'all')} />
+        <div className="requests-filters__spacer" />
+        <Tabs tabs={VIEW_TABS} value={view} onChange={(id) => setView(id as typeof view)} />
+      </div>
+
+      {/* Kanban */}
+      {view === 'kanban' && (
+        <div className="kanban">
+          {COLUMNS.map((col) => {
+            const tickets = list.filter((t) => t.status === col.key);
+            return (
+              <div key={col.key} className="kanban__col">
+                <div className="kanban__head" style={{ borderTopColor: col.accent }}>
+                  <span className="kanban__head-label">{col.label}</span>
+                  <span className="kanban__head-count">{tickets.length}</span>
+                </div>
+                {tickets.map((t) => (
+                  <TicketCard key={t.id} ticket={t} />
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Table */}
+      {view === 'table' && (
+        <div className="hd-card requests-table-wrap">
+          <DataTable
+            value={list}
+            dataKey="id"
+            onRowClick={(e) => openTicket((e.data as DecoratedTicket).id)}
+            className="requests-table"
+            rowClassName={() => 'requests-table__row'}
+            emptyMessage="Заявки не найдены"
+          >
+            <Column
+              header="№"
+              style={{ width: '78px' }}
+              body={(r: DecoratedTicket) => <span className="table-num tabular">{r.num}</span>}
+            />
+            <Column
+              header="Заявка"
+              body={(r: DecoratedTicket) => (
+                <div className="table-title">
+                  {r.emergency && <span className="table-title__dot" />}
+                  <span>{r.title}</span>
+                </div>
+              )}
+            />
+            <Column header="Житель" body={(r: DecoratedTicket) => <span className="muted">{r.resident}</span>} />
+            <Column header="Адрес" body={(r: DecoratedTicket) => <span className="muted nowrap">{r.addressShort}</span>} />
+            <Column header="Категория" body={(r: DecoratedTicket) => <Badge color="brand" size="sm">{r.category}</Badge>} />
+            <Column
+              header="Приоритет"
+              body={(r: DecoratedTicket) => (
+                <Badge color={PRIO[r.priority].color} size="sm" dot={r.priority !== 'low'}>
+                  {r.prioLabel}
+                </Badge>
+              )}
+            />
+            <Column
+              header="Статус"
+              body={(r: DecoratedTicket) => (
+                <Badge color={STATUS[r.status].color} size="sm">
+                  {r.statusLabel}
+                </Badge>
+              )}
+            />
+            <Column
+              header="Исполнитель"
+              body={(r: DecoratedTicket) =>
+                r.assignee ? (
+                  <div className="table-assignee">
+                    <Avatar name={r.assignee} size="xs" />
+                    <span className="muted">{r.assignee}</span>
+                  </div>
+                ) : (
+                  <span className="table-unassigned">— не назначен</span>
+                )
+              }
+            />
+            <Column
+              header="SLA"
+              body={(r: DecoratedTicket) => (
+                <span className="nowrap" style={{ color: r.slaColorValue, fontWeight: 600 }}>
+                  {r.sla}
+                </span>
+              )}
+            />
+          </DataTable>
+        </div>
+      )}
+
+      {/* Grid */}
+      {view === 'grid' && (
+        <div className="ticket-grid">
+          {list.map((t) => (
+            <TicketGridCard key={t.id} ticket={t} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
