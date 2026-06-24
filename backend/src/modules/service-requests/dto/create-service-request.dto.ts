@@ -58,6 +58,11 @@ export class CreateServiceRequestDto {
   externalChatId?: string;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  externalUserId?: string;
+
+  @IsOptional()
   @IsUUID()
   buildingId?: string;
 

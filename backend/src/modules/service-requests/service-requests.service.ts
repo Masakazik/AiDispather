@@ -88,11 +88,15 @@ export class ServiceRequestsService implements OnModuleInit {
     });
   }
 
-  /** Find an still-open lead from the same source conversation, for de-duplication. */
-  findOpenByExternalChatId(externalChatId: string): Promise<ServiceRequestWithRelations | null> {
+  /** Find a still-open lead from the same MAX chat + user, for de-duplication. */
+  findOpenByExternalMessengerIdentity(
+    externalChatId: string,
+    externalUserId: string,
+  ): Promise<ServiceRequestWithRelations | null> {
     return this.prisma.serviceRequest.findFirst({
       where: {
         externalChatId,
+        externalUserId,
         status: { notIn: [RequestStatus.DONE, RequestStatus.CLOSED] },
       },
       include: includeRelations,

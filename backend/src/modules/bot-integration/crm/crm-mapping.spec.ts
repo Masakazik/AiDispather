@@ -20,6 +20,7 @@ describe('crm-mapping', () => {
       summary: 'Жалоба на шум',
       user_message: 'У нас шум по ночам',
       external_chat_id: '304896997',
+      external_user_id: 'user-1',
       resident_name: 'ivan',
     });
   });

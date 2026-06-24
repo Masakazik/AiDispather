@@ -106,8 +106,9 @@ model ServiceRequest {
   apartmentLabel String? @map("apartment_label")
   // Display name of the assignee (real technician accounts come later).
   assigneeName   String? @map("assignee_name")
-  // External conversation id from the source bot, used to de-duplicate leads.
+  // MAX group chat + user ids, used to de-duplicate leads per resident.
   externalChatId String? @map("external_chat_id")
+  externalUserId String? @map("external_user_id")
 
   buildingId  String?    @map("building_id")
   apartmentId String?    @map("apartment_id")
@@ -129,6 +130,7 @@ model ServiceRequest {
   @@index([assignedToId])
   @@index([source])
   @@index([externalChatId])
+  @@index([externalChatId, externalUserId])
   @@map("service_requests")
 }
 

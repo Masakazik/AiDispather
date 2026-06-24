@@ -32,9 +32,12 @@ export class IntegrationsService {
       return { created: false, reason: 'not_a_problem' };
     }
 
-    // De-duplicate repeated messages from the same conversation.
-    if (dto.external_chat_id) {
-      const existing = await this.serviceRequests.findOpenByExternalChatId(dto.external_chat_id);
+    // De-duplicate repeated messages from the same resident in the same chat.
+    if (dto.external_chat_id && dto.external_user_id) {
+      const existing = await this.serviceRequests.findOpenByExternalMessengerIdentity(
+        dto.external_chat_id,
+        dto.external_user_id,
+      );
       if (existing) {
         this.logger.log(`MAX lead de-duplicated to existing #${existing.number}`);
         return {
@@ -61,6 +64,7 @@ export class IntegrationsService {
       residentPhone: dto.phone,
       apartmentLabel: dto.address,
       externalChatId: dto.external_chat_id,
+      externalUserId: dto.external_user_id,
     });
 
     this.logger.log(`MAX lead created: #${request.number} (${request.category ?? 'без категории'})`);
