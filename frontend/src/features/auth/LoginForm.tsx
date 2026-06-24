@@ -1,7 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { InputText } from 'primereact/inputtext';
-import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { Message } from 'primereact/message';
 import { Icon } from '@/components/ui';
@@ -75,15 +74,13 @@ export function LoginForm() {
 
       <div className="login-form__field">
         <label htmlFor="password">Пароль</label>
-        <Password
-          inputId="password"
+        <InputText
+          id="password"
+          type="password"
           value={password}
-          feedback={false}
-          toggleMask
           autoComplete="current-password"
           placeholder="••••••••"
-          className="login-form__password"
-          inputClassName={passwordInvalid ? 'p-invalid' : ''}
+          className={passwordInvalid ? 'p-invalid' : ''}
           onChange={(e) => setPassword(e.target.value)}
         />
         {passwordInvalid && <small className="login-form__hint">Минимум 6 символов</small>}

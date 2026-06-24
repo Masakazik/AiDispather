@@ -62,22 +62,8 @@
   font-weight: 600;
   color: var(--text-primary);
 }
-.login-form__field .p-inputtext,
-.login-form__field .p-password {
+.login-form__field .p-inputtext {
   width: 100%;
-}
-.login-form__field .p-password.p-inputwrapper {
-  width: 100%;
-  display: flex;
-}
-.login-form__field .p-password input,
-.login-form__field .p-password .p-inputtext {
-  width: 100%;
-  flex: 1 1 auto;
-}
-.login-form__password {
-  width: 100%;
-}
   border-radius: var(--radius-input);
   border-color: var(--action-secondary-border);
   font-family: var(--font-sans);

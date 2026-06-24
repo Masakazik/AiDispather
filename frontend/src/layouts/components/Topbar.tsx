@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Menu } from 'primereact/menu';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import type { MenuItem } from 'primereact/menuitem';
-import { Icon, Avatar, SearchInput } from '@/components/ui';
+import { Icon, Avatar } from '@/components/ui';
 import { useAuth } from '@/hooks/useAuth';
 import { displayName } from '@/utils/format';
 import { useRequestsStore } from '@/store/requests.store';
@@ -58,10 +58,6 @@ export function Topbar({ title, subtitle, onToggleSidebar }: TopbarProps) {
       </div>
 
       <div className="app-topbar__spacer" />
-
-      <div className="app-topbar__search">
-        <SearchInput placeholder="Поиск…" shortcut="/" />
-      </div>
 
       <div className="app-topbar__ai">
         <span className="app-topbar__ai-dot" />
