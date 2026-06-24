@@ -66,10 +66,18 @@
 .login-form__field .p-password {
   width: 100%;
 }
-.login-form__field .p-password input {
+.login-form__field .p-password.p-inputwrapper {
+  width: 100%;
+  display: flex;
+}
+.login-form__field .p-password input,
+.login-form__field .p-password .p-inputtext {
+  width: 100%;
+  flex: 1 1 auto;
+}
+.login-form__password {
   width: 100%;
 }
-.login-form__field .p-inputtext {
   border-radius: var(--radius-input);
   border-color: var(--action-secondary-border);
   font-family: var(--font-sans);

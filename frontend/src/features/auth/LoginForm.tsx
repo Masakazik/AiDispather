@@ -82,6 +82,7 @@ export function LoginForm() {
           toggleMask
           autoComplete="current-password"
           placeholder="••••••••"
+          className="login-form__password"
           inputClassName={passwordInvalid ? 'p-invalid' : ''}
           onChange={(e) => setPassword(e.target.value)}
         />
