@@ -19,6 +19,7 @@
     "infra:down": "docker compose down",
     "infra:logs": "docker compose logs -f",
     "db:migrate": "npm run prisma:migrate -w backend",
+    "db:deploy": "npm run prisma:deploy -w backend",
     "db:generate": "npm run prisma:generate -w backend",
     "db:seed": "npm run prisma:seed -w backend"
   },
