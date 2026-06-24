@@ -9,7 +9,7 @@ async function bootstrap(): Promise<void> {
   const config = app.get(ConfigService<AppConfig, true>);
 
   app.setGlobalPrefix('api', {
-    exclude: [{ path: 'webhook/max', method: RequestMethod.ALL }],
+    exclude: [{ path: 'webhooks/max', method: RequestMethod.ALL }],
   });
   app.enableCors({
     origin: config.get('corsOrigin', { infer: true }),

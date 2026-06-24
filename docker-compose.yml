@@ -41,7 +41,6 @@ services:
     env_file:
       - ${APP_ENV_FILE:-backend/.env}
     environment:
-      NODE_ENV: production
       PORT: 4000
       DATABASE_URL: postgresql://${POSTGRES_USER:-homedispatcher}:${POSTGRES_PASSWORD:-homedispatcher}@postgres:5432/${POSTGRES_DB:-homedispatcher}?schema=public
       REDIS_HOST: redis

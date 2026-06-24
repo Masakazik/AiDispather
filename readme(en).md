@@ -17,7 +17,7 @@ Production: https://domcrm.tech
 │  domcrm.tech│     │  Docker (docker compose)                 │
 │  nginx      │────▶│  app (:4000) — API + MAX bot             │
 │             │     │    ├─ REST /api/*                        │
-│  static     │     │    ├─ POST /webhook/max (no /api prefix) │
+│  static     │     │    ├─ POST /webhooks/max (no /api prefix) │
 │  frontend/  │     │    ├─ Yandex AI → ticket in-process      │
 │  dist/      │     │    postgres + redis                      │
 └─────────────┘     └──────────────────────────────────────────┘
@@ -30,7 +30,7 @@ Production: https://domcrm.tech
 Group-chat message flow:
 
 ```
-POST /webhook/max
+POST /webhooks/max
   → normalize update (groups only, skip bot messages)
   → Yandex AI (problem / not a problem)
   → if problem → IntegrationsService → create service request (in-process)
@@ -69,7 +69,7 @@ npm run dev
 
 - Frontend: http://localhost:5173
 - API: http://localhost:4000/api
-- MAX webhook (dev): http://localhost:4000/webhook/max
+- MAX webhook (dev): http://localhost:4000/webhooks/max
 
 In `NODE_ENV=development` the bot also posts the AI JSON response to the chat for debugging.
 
@@ -140,7 +140,7 @@ The standalone `poverka-max-ai-bot` container on port `:4005` is no longer neede
 root /home/homedispatcher/frontend/dist;
 index index.html;
 
-location = /webhook/max {
+location = /webhooks/max {
     proxy_pass http://127.0.0.1:4000;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
@@ -163,7 +163,7 @@ location / {
 }
 ```
 
-MAX webhook URL: `https://domcrm.tech/webhook/max`
+MAX webhook URL: `https://domcrm.tech/webhooks/max`
 
 ## Environment variables
 
@@ -208,7 +208,7 @@ REST endpoints use the `/api` prefix. MAX webhook does not.
 
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
-| POST | `/webhook/max` | public | MAX inbound webhook (primary) |
+| POST | `/webhooks/max` | public | MAX inbound webhook (primary) |
 | POST | `/api/integrations/max/webhook` | `x-webhook-secret` | Legacy HTTP integration |
 | GET | `/api/health` | public | DB + Redis health |
 | POST | `/api/auth/login` | public | Login |

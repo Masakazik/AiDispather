@@ -17,7 +17,7 @@
 │  domcrm.tech│     │  Docker (docker compose)                 │
 │  nginx      │────▶│  app (:4000) — API + MAX-бот            │
 │             │     │    ├─ REST /api/*                        │
-│  static     │     │    ├─ POST /webhook/max (без /api)       │
+│  static     │     │    ├─ POST /webhooks/max (без /api)       │
 │  frontend/  │     │    ├─ Yandex AI → заявка in-process      │
 │  dist/      │     │    postgres + redis                      │
 └─────────────┘     └──────────────────────────────────────────┘
@@ -30,7 +30,7 @@
 Флоу обработки сообщений в групповых чатах MAX:
 
 ```
-POST /webhook/max
+POST /webhooks/max
   → нормализация апдейта (только группы, не бот)
   → Yandex AI (классификация: проблема / не проблема)
   → если проблема → IntegrationsService → создание заявки (in-process, без HTTP)
@@ -86,7 +86,7 @@ npm run dev
 
 - Фронтенд: http://localhost:5173
 - API: http://localhost:4000/api
-- MAX webhook (dev): http://localhost:4000/webhook/max
+- MAX webhook (dev): http://localhost:4000/webhooks/max
 
 В dev-режиме (`NODE_ENV=development`) бот дополнительно отправляет JSON-ответ AI в чат для отладки.
 
@@ -170,7 +170,7 @@ root /home/homedispatcher/frontend/dist;
 index index.html;
 
 # MAX bot webhook (вне префикса /api)
-location = /webhook/max {
+location = /webhooks/max {
     proxy_pass http://127.0.0.1:4000;
     proxy_http_version 1.1;
     proxy_set_header Host $host;
@@ -193,7 +193,7 @@ location / {
 }
 ```
 
-URL webhook в настройках MAX: `https://domcrm.tech/webhook/max`
+URL webhook в настройках MAX: `https://domcrm.tech/webhooks/max`
 
 ## Переменные окружения
 
@@ -267,7 +267,7 @@ URL webhook в настройках MAX: `https://domcrm.tech/webhook/max`
 
 | Метод | Путь | Auth | Описание |
 |-------|------|------|----------|
-| POST | `/webhook/max` | public | Inbound webhook от MAX (основной) |
+| POST | `/webhooks/max` | public | Inbound webhook от MAX (основной) |
 | POST | `/api/integrations/max/webhook` | `x-webhook-secret` | Legacy HTTP-интеграция |
 
 ## Структура проекта
@@ -325,7 +325,7 @@ URL webhook в настройках MAX: `https://domcrm.tech/webhook/max`
 | Ошибка подключения к БД | `docker compose ps`, проверьте `DATABASE_URL` |
 | Prisma не видит схему | `npm run db:generate` |
 | CORS | `CORS_ORIGIN` должен содержать URL фронтенда |
-| MAX webhook 404 | Убедитесь, что nginx проксирует `/webhook/max`, не `/api/webhook/max` |
+| MAX webhook 404 | Убедитесь, что nginx проксирует `/webhooks/max`, не `/api/webhooks/max` |
 | Бот не отвечает | Проверьте `MAX_BOT_TOKEN`, `YANDEX_AI_*` в `backend/.env` |
 
 ## CI/CD

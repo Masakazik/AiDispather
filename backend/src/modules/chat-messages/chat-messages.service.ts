@@ -1,7 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppLogger } from '../../common/logger/app-logger.service';
-import type { AppConfig } from '../../config/configuration';
 import { AiResponse } from '../ai/schemas/ai-response.schema';
 import { YandexAiService } from '../ai/yandex-ai.service';
 import { CRM_ADAPTER, CrmAdapterPort } from '../bot-integration/crm/crm-adapter.port';
@@ -14,14 +13,14 @@ export class ChatMessagesService {
   private readonly isDevMode: boolean;
 
   constructor(
-    private readonly config: ConfigService<AppConfig, true>,
+    private readonly configService: ConfigService,
     private readonly normalizer: MaxUpdateNormalizer,
     private readonly yandexAiService: YandexAiService,
     @Inject(CRM_ADAPTER) private readonly crmAdapter: CrmAdapterPort,
     private readonly maxApiService: MaxApiService,
     private readonly logger: AppLogger,
   ) {
-    this.isDevMode = this.config.get('nodeEnv', { infer: true }) === 'development';
+    this.isDevMode = this.configService.get<string>('NODE_ENV', 'production') === 'development';
   }
 
   async handleUpdate(rawUpdate: MaxUpdateDto | Record<string, unknown>): Promise<void> {

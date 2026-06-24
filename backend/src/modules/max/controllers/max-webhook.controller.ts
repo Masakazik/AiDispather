@@ -1,13 +1,14 @@
-import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Req } from '@nestjs/common';
+import type { Request } from 'express';
 import { Public } from '../../../common/decorators/public.decorator';
 import { AppLogger } from '../../../common/logger/app-logger.service';
 import { ChatMessagesService } from '../../chat-messages/chat-messages.service';
 import { MaxUpdateDto } from '../dto/updates.dto';
 
-/** MAX messenger inbound webhook — registered at POST /webhook/max (no /api prefix). */
+/** MAX inbound webhook — same as poverka-max-ai-bot: POST /webhooks/max */
 @Public()
-@Controller('webhook/max')
-export class MaxInboundWebhookController {
+@Controller('webhooks/max')
+export class MaxBotWebhookController {
   constructor(
     private readonly chatMessagesService: ChatMessagesService,
     private readonly logger: AppLogger,
@@ -15,7 +16,8 @@ export class MaxInboundWebhookController {
 
   @Post()
   @HttpCode(200)
-  async handleWebhook(@Body() body: unknown): Promise<{ ok: boolean }> {
+  async handleWebhook(@Req() req: Request): Promise<{ ok: boolean }> {
+    const body = req.body as unknown;
     const updates = this.extractUpdates(body);
     this.logger.log(
       JSON.stringify({
