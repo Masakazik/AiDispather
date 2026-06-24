@@ -32,6 +32,28 @@ services:
       timeout: 5s
       retries: 5
 
+  app:
+    container_name: homedispatcher-app
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ${APP_ENV_FILE:-backend/.env}
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-homedispatcher}:${POSTGRES_PASSWORD:-homedispatcher}@postgres:5432/${POSTGRES_DB:-homedispatcher}?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "${APP_PORT:-4000}:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
 volumes:
   postgres_data:
   redis_data:

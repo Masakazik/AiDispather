@@ -13,7 +13,9 @@ import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { EmployeesModule } from './modules/employees/employees.module';
 import { DocumentsModule } from './modules/documents/documents.module';
+import { BotModule } from './modules/bot/bot.module';
 import { HealthModule } from './health/health.module';
+import { LoggerModule } from './common/logger/logger.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
@@ -26,6 +28,7 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
       load: [configuration],
       validate: validateEnv,
     }),
+    LoggerModule,
     PrismaModule,
     RedisModule,
     QueueModule,
@@ -36,6 +39,7 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
     TasksModule,
     EmployeesModule,
     DocumentsModule,
+    BotModule,
     HealthModule,
   ],
   providers: [

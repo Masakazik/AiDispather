@@ -7,5 +7,6 @@ import { MaxWebhookController } from './max-webhook.controller';
   imports: [ServiceRequestsModule],
   controllers: [MaxWebhookController],
   providers: [IntegrationsService],
+  exports: [IntegrationsService],
 })
 export class IntegrationsModule {}

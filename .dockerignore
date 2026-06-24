@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+**/dist
+.git
+.github
+.env
+backend/.env
+frontend/.env
+*.md
+.cursor
+terminals
+agent-transcripts
+mcps
+npm-debug.log*
+.DS_Store
