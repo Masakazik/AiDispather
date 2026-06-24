@@ -2,10 +2,13 @@
 CREATE TYPE "UserRole" AS ENUM ('ADMIN', 'DISPATCHER', 'TECHNICIAN', 'RESIDENT');
 
 -- CreateEnum
-CREATE TYPE "RequestStatus" AS ENUM ('NEW', 'IN_PROGRESS', 'ON_HOLD', 'DONE', 'CANCELLED');
+CREATE TYPE "RequestStatus" AS ENUM ('NEW', 'ASSIGNED', 'IN_PROGRESS', 'WAITING', 'DONE', 'CLOSED');
 
 -- CreateEnum
-CREATE TYPE "RequestPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'URGENT');
+CREATE TYPE "RequestPriority" AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
+
+-- CreateEnum
+CREATE TYPE "RequestSource" AS ENUM ('MAX', 'TELEGRAM', 'PHONE', 'WIDGET', 'MANUAL');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -50,10 +53,18 @@ CREATE TABLE "apartments" (
 -- CreateTable
 CREATE TABLE "service_requests" (
     "id" TEXT NOT NULL,
+    "number" INTEGER NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
     "status" "RequestStatus" NOT NULL DEFAULT 'NEW',
     "priority" "RequestPriority" NOT NULL DEFAULT 'MEDIUM',
+    "source" "RequestSource" NOT NULL DEFAULT 'MANUAL',
+    "category" TEXT,
+    "resident_name" TEXT,
+    "resident_phone" TEXT,
+    "apartment_label" TEXT,
+    "assignee_name" TEXT,
+    "external_chat_id" TEXT,
     "building_id" TEXT,
     "apartment_id" TEXT,
     "assigned_to_id" TEXT,
@@ -73,6 +84,9 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "apartments_building_id_number_key" ON "apartments"("building_id", "number");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "service_requests_number_key" ON "service_requests"("number");
+
+-- CreateIndex
 CREATE INDEX "service_requests_status_idx" ON "service_requests"("status");
 
 -- CreateIndex
@@ -80,6 +94,12 @@ CREATE INDEX "service_requests_priority_idx" ON "service_requests"("priority");
 
 -- CreateIndex
 CREATE INDEX "service_requests_assigned_to_id_idx" ON "service_requests"("assigned_to_id");
+
+-- CreateIndex
+CREATE INDEX "service_requests_source_idx" ON "service_requests"("source");
+
+-- CreateIndex
+CREATE INDEX "service_requests_external_chat_id_idx" ON "service_requests"("external_chat_id");
 
 -- AddForeignKey
 ALTER TABLE "apartments" ADD CONSTRAINT "apartments_building_id_fkey" FOREIGN KEY ("building_id") REFERENCES "buildings"("id") ON DELETE CASCADE ON UPDATE CASCADE;

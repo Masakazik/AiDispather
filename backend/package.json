@@ -22,6 +22,7 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@nestjs/bullmq": "^11.0.0",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
@@ -29,7 +30,7 @@
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/passport": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
-    "@nestjs/bullmq": "^11.0.0",
+    "@prisma/client": "^6.2.1",
     "bcryptjs": "^2.4.3",
     "bullmq": "^5.34.0",
     "class-transformer": "^0.5.1",
@@ -37,24 +38,24 @@
     "ioredis": "^5.4.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "@prisma/client": "^6.2.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
   "devDependencies": {
+    "@eslint/js": "^9.18.0",
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",
+    "@types/multer": "^2.1.0",
     "@types/node": "^22.10.5",
     "@types/passport-jwt": "^4.0.1",
-    "@eslint/js": "^9.18.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^9.1.0",
-    "typescript-eslint": "^8.19.1",
     "prisma": "^6.2.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.19.1"
   }
 }

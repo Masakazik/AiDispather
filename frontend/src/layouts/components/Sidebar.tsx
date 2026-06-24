@@ -53,9 +53,6 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
           <div className="app-sidebar__footer-name">Дарья Морозова</div>
           <div className="app-sidebar__footer-role">Старший диспетчер</div>
         </div>
-        <span className="app-sidebar__footer-gear">
-          <Icon name="IconGear" size={18} />
-        </span>
       </div>
     </aside>
   );

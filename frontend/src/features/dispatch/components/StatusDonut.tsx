@@ -1,11 +1,20 @@
-import { STATUS_SEGMENTS } from '../data';
+interface Segment {
+  label: string;
+  count: number;
+  color: string;
+}
 
-/** Conic-gradient donut with a legend, replicating the design's status breakdown. */
-export function StatusDonut() {
-  const total = STATUS_SEGMENTS.reduce((sum, s) => sum + s.count, 0);
+interface StatusDonutProps {
+  segments: Segment[];
+}
+
+/** Conic-gradient donut with a legend. */
+export function StatusDonut({ segments }: StatusDonutProps) {
+  const total = segments.reduce((sum, s) => sum + s.count, 0);
+  if (total === 0) return <div className="empty-hint">Нет данных</div>;
 
   let acc = 0;
-  const stops = STATUS_SEGMENTS.map((s) => {
+  const stops = segments.map((s) => {
     const from = (acc / total) * 360;
     acc += s.count;
     const to = (acc / total) * 360;
@@ -21,7 +30,7 @@ export function StatusDonut() {
         </div>
       </div>
       <div className="donut__legend">
-        {STATUS_SEGMENTS.map((s) => (
+        {segments.map((s) => (
           <div key={s.label} className="donut__legend-row">
             <span className="donut__swatch" style={{ background: s.color }} />
             <span className="donut__legend-label">{s.label}</span>

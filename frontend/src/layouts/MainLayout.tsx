@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Sidebar } from './components/Sidebar';
 import { Topbar } from './components/Topbar';
 import { ALL_SCREENS } from '@/constants/navigation';
 import { TicketDrawer } from '@/features/dispatch/components/TicketDrawer';
 import { ResidentDrawer } from '@/features/dispatch/components/ResidentDrawer';
+import { useRequestsStore } from '@/store/requests.store';
+import { useTasksStore } from '@/store/tasks.store';
+import { useEmployeesStore } from '@/store/employees.store';
 
 function useCurrentScreen() {
   const { pathname } = useLocation();
@@ -19,6 +22,16 @@ function useCurrentScreen() {
 export function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const screen = useCurrentScreen();
+  const fetchRequests = useRequestsStore((s) => s.fetch);
+  const fetchTasks = useTasksStore((s) => s.fetch);
+  const fetchEmployees = useEmployeesStore((s) => s.fetch);
+
+  // Load live data once for the whole authenticated app.
+  useEffect(() => {
+    void fetchRequests();
+    void fetchTasks();
+    void fetchEmployees();
+  }, [fetchRequests, fetchTasks, fetchEmployees]);
 
   return (
     <div className="app-shell">

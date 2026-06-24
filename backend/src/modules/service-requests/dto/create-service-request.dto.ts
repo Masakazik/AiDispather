@@ -6,7 +6,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { RequestPriority } from '@prisma/client';
+import { RequestPriority, RequestSource } from '@prisma/client';
 
 export class CreateServiceRequestDto {
   @IsString()
@@ -22,6 +22,40 @@ export class CreateServiceRequestDto {
   @IsOptional()
   @IsEnum(RequestPriority)
   priority?: RequestPriority;
+
+  @IsOptional()
+  @IsEnum(RequestSource)
+  source?: RequestSource;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  category?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  residentName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(40)
+  residentPhone?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(80)
+  apartmentLabel?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  assigneeName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  externalChatId?: string;
 
   @IsOptional()
   @IsUUID()

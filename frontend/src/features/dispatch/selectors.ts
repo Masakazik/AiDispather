@@ -32,15 +32,18 @@ export function decorateTicket(t: Ticket): DecoratedTicket {
   const st = STATUS[t.status];
   const pr = PRIO[t.priority];
   const b = buildingById(t.bId);
+  // Live data carries its own building name; static mock resolves via the lookup.
+  const bName = t.buildingName ?? b?.name ?? '';
+  const bCorp = t.buildingName ? '' : (b?.corp ?? '');
   return {
     ...t,
     statusLabel: st.label,
     statusColorKey: t.status,
     statusDot: st.dot,
     prioLabel: pr.label,
-    buildingName: b?.name ?? '',
-    corp: b?.corp ?? '',
-    addressShort: `${(b?.name ?? '').replace('ЖК ', '')} · ${t.apt}`,
+    buildingName: bName,
+    corp: bCorp,
+    addressShort: `${bName.replace('ЖК ', '')} · ${t.apt}`,
     slaColorValue: slaColor(t.slaState),
   };
 }
@@ -54,11 +57,6 @@ export function ticketTimeline(t: Ticket): TimelineEntry[] {
     who: t.created,
     dot: tlDot('var(--hd-neutral-400)'),
   });
-  timeline.push({
-    label: `ИИ определил категорию «${t.category}» — ${t.aiConf}%`,
-    who: 'AI Домовей · авто',
-    dot: tlDot('var(--hd-blue-500)'),
-  });
   if (t.emergency)
     timeline.push({ label: 'Эскалация на аварийную бригаду', who: t.created, dot: tlDot('var(--hd-red-500)') });
   if (t.assignee)
@@ -71,9 +69,7 @@ export function ticketTimeline(t: Ticket): TimelineEntry[] {
 }
 
 export function ticketComments(t: Ticket): CommentEntry[] {
-  const comments: CommentEntry[] = [
-    { who: 'AI Домовей', ai: true, time: t.created.split('· ')[1] ?? '07:31', text: t.aiNote },
-  ];
+  const comments: CommentEntry[] = [];
   if (t.assignee)
     comments.push({
       who: t.assignee,

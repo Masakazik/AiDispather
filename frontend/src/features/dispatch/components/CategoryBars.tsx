@@ -1,11 +1,20 @@
-import { CATEGORIES } from '../data';
+interface CategoryDatum {
+  label: string;
+  count: number;
+  color: string;
+}
+
+interface CategoryBarsProps {
+  data: CategoryDatum[];
+}
 
 /** Horizontal category breakdown bars. */
-export function CategoryBars() {
-  const max = Math.max(...CATEGORIES.map((c) => c.count));
+export function CategoryBars({ data }: CategoryBarsProps) {
+  const max = Math.max(1, ...data.map((c) => c.count));
+  if (data.length === 0) return <div className="empty-hint">Нет данных</div>;
   return (
     <div className="cat-bars">
-      {CATEGORIES.map((c) => (
+      {data.map((c) => (
         <div key={c.label} className="cat-bars__row">
           <span className="cat-bars__label">{c.label}</span>
           <div className="cat-bars__track">

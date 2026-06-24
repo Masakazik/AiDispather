@@ -1,30 +1,35 @@
-import { Icon } from '@/components/ui';
+import { useMemo } from 'react';
+import { Avatar, Icon } from '@/components/ui';
 import { useDispatchStore } from '@/store/dispatch.store';
+import { useRequestsStore } from '@/store/requests.store';
 import { WeekBarChart } from '@/features/dispatch/components/WeekBarChart';
 import { StatusDonut } from '@/features/dispatch/components/StatusDonut';
 import { CategoryBars } from '@/features/dispatch/components/CategoryBars';
 import { MeterBar } from '@/features/dispatch/components/MeterBar';
-import { Avatar } from '@/components/ui';
-import { ACTIVITY, DASHBOARD_KPIS, EMPLOYEES, INSIGHTS, TICKETS } from '@/features/dispatch/data';
 import { decorateTicket } from '@/features/dispatch/selectors';
-
-function loadColor(load: number): string {
-  if (load >= 85) return 'var(--status-error-solid)';
-  if (load >= 60) return 'var(--status-warning-solid)';
-  return 'var(--status-success-solid)';
-}
+import { dashboardMetrics, isOpen } from '@/features/dispatch/metrics';
 
 export default function DashboardPage() {
   const openTicket = useDispatchStore((s) => s.openTicket);
-  const active = TICKETS.filter((t) => t.status !== 'done' && t.status !== 'closed')
-    .slice(0, 5)
-    .map(decorateTicket);
+  const rows = useRequestsStore((s) => s.rows);
+  const items = useRequestsStore((s) => s.items);
+
+  const m = useMemo(() => dashboardMetrics(rows), [rows]);
+  const active = useMemo(
+    () =>
+      items
+        .filter((t) => t.status !== 'done' && t.status !== 'closed')
+        .slice(0, 6)
+        .map(decorateTicket),
+    [items],
+  );
+  const openIds = new Set(rows.filter(isOpen).map((r) => r.id));
 
   return (
     <div className="page">
       {/* KPI row */}
       <div className="kpi-grid">
-        {DASHBOARD_KPIS.map((k) => (
+        {m.kpis.map((k) => (
           <div key={k.label} className="kpi-card">
             <div className="kpi-card__head">
               <span className="kpi-card__label">{k.label}</span>
@@ -34,78 +39,63 @@ export default function DashboardPage() {
             </div>
             <div className="kpi-card__value">{k.value}</div>
             <div className="kpi-card__foot">
-              {k.delta && <span className="kpi-card__delta">{k.delta}</span>}
               <span className="kpi-card__sub">{k.sub}</span>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Week chart + AI insights */}
-      <div className="dash-row dash-row--2-1">
-        <div className="hd-card">
-          <div className="card-head">
-            <h3 className="hd-h3">Динамика заявок за неделю</h3>
-            <div className="legend">
-              <span className="legend__item">
-                <span className="legend__swatch" style={{ background: 'var(--hd-blue-200)' }} />
-                Поступило
-              </span>
-              <span className="legend__item">
-                <span className="legend__swatch" style={{ background: 'var(--hd-blue-600)' }} />
-                Решено
-              </span>
-            </div>
-          </div>
-          <WeekBarChart />
-        </div>
-
-        <div className="hd-card ai-card">
-          <div className="ai-card__head">
-            <span className="ai-card__icon">
-              <Icon name="IconSparkle" size={17} color="#fff" />
+      {/* Weekly dynamics */}
+      <div className="hd-card">
+        <div className="card-head">
+          <h3 className="hd-h3">Динамика заявок за неделю</h3>
+          <div className="legend">
+            <span className="legend__item">
+              <span className="legend__swatch" style={{ background: 'var(--hd-blue-200)' }} />
+              Поступило
             </span>
-            <h3 className="hd-h3" style={{ color: 'var(--hd-blue-800)' }}>
-              ИИ-инсайты
-            </h3>
-          </div>
-          <div className="ai-card__list">
-            {INSIGHTS.map((ins, i) => (
-              <div key={i} className="ai-card__item">
-                <span className="ai-card__bullet" />
-                <span>{ins}</span>
-              </div>
-            ))}
+            <span className="legend__item">
+              <span className="legend__swatch" style={{ background: 'var(--hd-blue-600)' }} />
+              Решено
+            </span>
           </div>
         </div>
+        <WeekBarChart data={m.week} />
       </div>
 
-      {/* Categories + donut + employee load */}
+      {/* Categories + status donut + assignee load */}
       <div className="dash-row dash-row--3">
         <div className="hd-card">
           <h3 className="hd-h3 card-title">Заявки по категориям</h3>
-          <CategoryBars />
+          <CategoryBars data={m.categories} />
         </div>
 
         <div className="hd-card">
           <h3 className="hd-h3 card-title">Заявки по статусам</h3>
-          <StatusDonut />
+          <StatusDonut segments={m.statusSegments} />
         </div>
 
         <div className="hd-card">
-          <h3 className="hd-h3 card-title">Загрузка сотрудников</h3>
-          <div className="emp-load">
-            {EMPLOYEES.slice(0, 6).map((e) => (
-              <div key={e.id} className="emp-load__row">
-                <Avatar name={e.name} size="xs" />
-                <div className="emp-load__main">
-                  <div className="emp-load__name">{e.name}</div>
-                  <MeterBar value={e.load} color={loadColor(e.load)} />
+          <h3 className="hd-h3 card-title">Загрузка исполнителей</h3>
+          {m.load.length ? (
+            <div className="emp-load">
+              {m.load.map((e) => (
+                <div key={e.name} className="emp-load__row">
+                  <Avatar name={e.name} size="xs" />
+                  <div className="emp-load__main">
+                    <div className="emp-load__name">{e.name}</div>
+                    <MeterBar
+                      value={(e.count / m.loadMax) * 100}
+                      color="var(--hd-blue-500)"
+                    />
+                  </div>
+                  <span className="emp-load__pct">{e.count}</span>
                 </div>
-                <span className="emp-load__pct">{e.load}%</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-hint">Нет назначенных заявок</div>
+          )}
         </div>
       </div>
 
@@ -113,36 +103,46 @@ export default function DashboardPage() {
       <div className="dash-row dash-row--2">
         <div className="hd-card">
           <h3 className="hd-h3 card-title">Активные заявки</h3>
-          <div className="active-list">
-            {active.map((t) => (
-              <div key={t.id} className="active-list__row" onClick={() => openTicket(t.id)}>
-                <span className="active-list__dot" style={{ background: t.statusDot }} />
-                <span className="active-list__num tabular">{t.num}</span>
-                <span className="active-list__title">{t.title}</span>
-                <span className="active-list__sla" style={{ color: t.slaColorValue }}>
-                  {t.sla}
-                </span>
-              </div>
-            ))}
-          </div>
+          {active.length ? (
+            <div className="active-list">
+              {active.map((t) => (
+                <div key={t.id} className="active-list__row" onClick={() => openTicket(t.id)}>
+                  <span className="active-list__dot" style={{ background: t.statusDot }} />
+                  <span className="active-list__num tabular">{t.num}</span>
+                  <span className="active-list__title">{t.title}</span>
+                  <span className="active-list__sla muted">{t.statusLabel}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-hint">Активных заявок нет</div>
+          )}
         </div>
 
         <div className="hd-card">
           <div className="card-head card-head--feed">
             <span className="feed-dot" />
             <h3 className="hd-h3">Лента событий</h3>
-            <span className="feed-live">в реальном времени</span>
+            <span className="feed-live">по обновлениям</span>
           </div>
-          <div className="feed">
-            {ACTIVITY.map((a, i) => (
-              <div key={i} className="feed__row">
-                <span className="feed__time tabular">{a.time}</span>
-                <span className="feed__text">{a.text}</span>
-              </div>
-            ))}
-          </div>
+          {m.activity.length ? (
+            <div className="feed">
+              {m.activity.map((a, i) => (
+                <div key={i} className="feed__row">
+                  <span className="feed__time tabular">{a.time}</span>
+                  <span className="feed__text">{a.text}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-hint">Пока нет событий</div>
+          )}
         </div>
       </div>
+
+      {openIds.size === 0 && rows.length === 0 && (
+        <div className="empty-hint">Загрузка данных…</div>
+      )}
     </div>
   );
 }

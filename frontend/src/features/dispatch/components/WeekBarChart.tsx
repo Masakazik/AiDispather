@@ -1,17 +1,22 @@
-import { WEEK_SERIES } from '../data';
+interface WeekDatum {
+  label: string;
+  incoming: number;
+  resolved: number;
+}
 
 interface WeekBarChartProps {
+  data: WeekDatum[];
   height?: number;
 }
 
-/** Grouped (incoming vs resolved) weekly bar chart, built with CSS like the design. */
-export function WeekBarChart({ height = 190 }: WeekBarChartProps) {
-  const max = Math.max(...WEEK_SERIES.map((d) => Math.max(d.incoming, d.resolved)));
+/** Grouped (incoming vs resolved) weekly bar chart, built with CSS. */
+export function WeekBarChart({ data, height = 190 }: WeekBarChartProps) {
+  const max = Math.max(1, ...data.map((d) => Math.max(d.incoming, d.resolved)));
 
   return (
     <div className="week-chart" style={{ height }}>
-      {WEEK_SERIES.map((d) => (
-        <div key={d.label} className="week-chart__col">
+      {data.map((d, i) => (
+        <div key={`${d.label}-${i}`} className="week-chart__col">
           <div className="week-chart__bars">
             <div
               className="week-chart__bar"

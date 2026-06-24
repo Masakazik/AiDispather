@@ -13,6 +13,7 @@ export interface AppConfig {
     expiresIn: string;
   };
   cacheTtl: number;
+  maxWebhookSecret: string;
 }
 
 export default (): AppConfig => ({
@@ -33,4 +34,5 @@ export default (): AppConfig => ({
     expiresIn: process.env.JWT_EXPIRES_IN ?? '1d',
   },
   cacheTtl: parseInt(process.env.CACHE_TTL ?? '60', 10),
+  maxWebhookSecret: process.env.MAX_WEBHOOK_SECRET ?? 'dev-max-webhook-secret',
 });

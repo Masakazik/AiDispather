@@ -453,12 +453,13 @@
   display: flex;
   gap: 16px;
   align-items: flex-start;
+  width: 100%;
   overflow-x: auto;
   padding-bottom: 8px;
 }
 .kanban__col {
-  width: 300px;
-  flex: none;
+  flex: 1 1 0;
+  min-width: 240px;
   background: var(--surface-sunken);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
@@ -705,7 +706,7 @@
 .cards-grid {
   display: grid;
   gap: 16px;
-  max-width: var(--content-max);
+  width: 100%;
 }
 .cards-grid--340 {
   grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -912,9 +913,9 @@
 /* ===== Calendar ===== */
 .calendar-layout {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr minmax(280px, 380px);
   gap: 16px;
-  max-width: var(--content-max);
+  width: 100%;
 }
 .calendar-grid {
   display: grid;
@@ -1032,7 +1033,7 @@
 
 /* ===== Tasks ===== */
 .tasks-list {
-  max-width: 920px;
+  width: 100%;
 }
 .tasks-list__row {
   display: flex;
@@ -1144,7 +1145,7 @@
 
 /* ===== Documents ===== */
 .docs-list {
-  max-width: 1000px;
+  width: 100%;
 }
 .docs-list__row {
   display: flex;
@@ -1495,7 +1496,197 @@
   text-overflow: ellipsis;
 }
 
+/* ===== Tasks: add bar ===== */
+.task-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.task-add .p-inputtext,
+.task-add input[type='date'] {
+  height: 40px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--action-secondary-border);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  padding: 0 12px;
+  color: var(--text-primary);
+  background: var(--surface-card);
+}
+.task-add__title {
+  flex: 1;
+  min-width: 180px;
+}
+.task-add__assignee,
+.task-add__due,
+.task-add__prio {
+  width: 150px;
+}
+
+/* ===== Staff phone ===== */
+.staff-card__phone {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 14px;
+}
+
+/* ===== Calendar controls ===== */
+.calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.calendar-nav .hd-icon-btn:first-child {
+  transform: rotate(90deg);
+}
+.calendar-nav .hd-icon-btn:last-child {
+  transform: rotate(-90deg);
+}
+.calendar-cell--clickable {
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+.calendar-cell--clickable:hover {
+  border-color: var(--border-default);
+}
+.calendar-cell--selected {
+  border-color: var(--hd-blue-500);
+  box-shadow: 0 0 0 2px var(--action-primary-ring);
+}
+.calendar-cell__more {
+  font-size: 10px;
+  color: var(--text-tertiary);
+}
+.calendar-add {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.calendar-add .p-inputtext {
+  flex: 1;
+  height: 40px;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--action-secondary-border);
+  font-size: 14px;
+  padding: 0 12px;
+}
+.calendar-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.calendar-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+}
+.calendar-task__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  flex: none;
+}
+.calendar-task__title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+.calendar-task__title--done {
+  text-decoration: line-through;
+  color: var(--text-tertiary);
+}
+
+/* ===== Notifications panel ===== */
+.notif-panel.p-overlaypanel {
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-lg);
+}
+.notif-panel.p-overlaypanel .p-overlaypanel-content {
+  padding: 14px;
+}
+.notif {
+  width: 320px;
+  max-width: 80vw;
+}
+.notif__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.notif__section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: 12px 0 6px;
+}
+.notif__empty {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: 2px 4px;
+}
+.notif__row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 8px 6px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-align: left;
+  transition: var(--transition-colors);
+}
+.notif__row:hover {
+  background: var(--surface-sunken);
+}
+.notif__row--static,
+.notif__row--static:hover {
+  cursor: default;
+  background: transparent;
+}
+.notif__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  flex: none;
+}
+.notif__num {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  flex: none;
+}
+.notif__text {
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* ===== Responsive grids ===== */
+@media (min-width: 1600px) {
+  .calendar-layout {
+    grid-template-columns: 1fr minmax(320px, 420px);
+  }
+}
 @media (max-width: 1100px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);

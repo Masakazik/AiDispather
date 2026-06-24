@@ -1,12 +1,14 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Badge, Avatar, Button, Select, SearchInput, Tabs, type SelectOption } from '@/components/ui';
 import { useDispatchStore } from '@/store/dispatch.store';
-import { BUILDINGS, COLUMNS, EMPLOYEES, PRIO, STATUS, TICKETS } from '@/features/dispatch/data';
+import { useRequestsStore } from '@/store/requests.store';
+import { BUILDINGS, COLUMNS, EMPLOYEES, PRIO, STATUS } from '@/features/dispatch/data';
 import { assigneeShortName, decorateTicket, type DecoratedTicket } from '@/features/dispatch/selectors';
 import { TicketCard } from '@/features/dispatch/components/TicketCard';
 import { TicketGridCard } from '@/features/dispatch/components/TicketGridCard';
+import { NewRequestDialog } from '@/features/dispatch/components/NewRequestDialog';
 import type { TicketPriority, TicketStatus } from '@/types/dispatch';
 
 const VIEW_TABS = [
@@ -31,10 +33,12 @@ export default function RequestsPage() {
     setView,
     openTicket,
   } = useDispatchStore();
+  const items = useRequestsStore((s) => s.items);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const list = useMemo<DecoratedTicket[]>(() => {
     const q = search.trim().toLowerCase();
-    return TICKETS.filter((t) => {
+    return items.filter((t) => {
       if (priority !== 'all' && t.priority !== priority) return false;
       if (statusFilter !== 'all' && t.status !== statusFilter) return false;
       if (buildingFilter !== 'all' && t.bId !== buildingFilter) return false;
@@ -45,10 +49,10 @@ export default function RequestsPage() {
       }
       return true;
     }).map(decorateTicket);
-  }, [search, priority, statusFilter, buildingFilter, assigneeFilter]);
+  }, [items, search, priority, statusFilter, buildingFilter, assigneeFilter]);
 
   const count = (p: TicketPriority | 'all') =>
-    TICKETS.filter((t) => (p === 'all' ? true : t.priority === p)).length;
+    items.filter((t) => (p === 'all' ? true : t.priority === p)).length;
 
   const priorityTabs = [
     { id: 'all', label: 'Все', count: count('all') },
@@ -92,7 +96,9 @@ export default function RequestsPage() {
           <Select options={assigneeOptions} value={assigneeFilter} onChange={setAssigneeFilter} />
         </div>
         <div className="requests-filters__spacer" />
-        <Button variant="primary">+ Новая заявка</Button>
+        <Button variant="primary" onClick={() => setDialogOpen(true)}>
+          + Новая заявка
+        </Button>
       </div>
 
       {/* Priority + view tabs */}
@@ -199,6 +205,8 @@ export default function RequestsPage() {
           ))}
         </div>
       )}
+
+      <NewRequestDialog open={dialogOpen} onClose={() => setDialogOpen(false)} />
     </div>
   );
 }

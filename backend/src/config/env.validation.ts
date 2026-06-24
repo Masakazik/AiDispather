@@ -23,6 +23,10 @@ class EnvironmentVariables {
 
   @IsString()
   JWT_SECRET!: string;
+
+  @IsString()
+  @IsOptional()
+  MAX_WEBHOOK_SECRET?: string;
 }
 
 export function validateEnv(config: Record<string, unknown>) {

@@ -19,17 +19,26 @@ enum UserRole {
 
 enum RequestStatus {
   NEW
+  ASSIGNED
   IN_PROGRESS
-  ON_HOLD
+  WAITING
   DONE
-  CANCELLED
+  CLOSED
 }
 
 enum RequestPriority {
   LOW
   MEDIUM
   HIGH
-  URGENT
+  CRITICAL
+}
+
+enum RequestSource {
+  MAX
+  TELEGRAM
+  PHONE
+  WIDGET
+  MANUAL
 }
 
 model User {
@@ -81,10 +90,24 @@ model Apartment {
 
 model ServiceRequest {
   id          String          @id @default(uuid())
+  // Human-friendly sequential number (e.g. 10259) shown as "#10259" in the UI.
+  // Values are drawn from the Postgres sequence `hd_request_number_seq`.
+  number      Int             @unique
   title       String
   description String?
   status      RequestStatus   @default(NEW)
   priority    RequestPriority @default(MEDIUM)
+  source      RequestSource   @default(MANUAL)
+  category    String?
+
+  // Reporter details captured from the messenger/bot or a manual entry.
+  residentName   String? @map("resident_name")
+  residentPhone  String? @map("resident_phone")
+  apartmentLabel String? @map("apartment_label")
+  // Display name of the assignee (real technician accounts come later).
+  assigneeName   String? @map("assignee_name")
+  // External conversation id from the source bot, used to de-duplicate leads.
+  externalChatId String? @map("external_chat_id")
 
   buildingId  String?    @map("building_id")
   apartmentId String?    @map("apartment_id")
@@ -104,5 +127,56 @@ model ServiceRequest {
   @@index([status])
   @@index([priority])
   @@index([assignedToId])
+  @@index([source])
+  @@index([externalChatId])
   @@map("service_requests")
+}
+
+enum EmployeePresence {
+  ONLINE
+  AWAY
+  OFFLINE
+}
+
+model Employee {
+  id          String           @id @default(uuid())
+  name        String
+  role        String
+  phone       String?
+  presence    EmployeePresence @default(ONLINE)
+  activeCount Int              @default(0) @map("active_count")
+  doneCount   Int              @default(0) @map("done_count")
+  rating      Float            @default(5)
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  @@map("employees")
+}
+
+model Task {
+  id           String          @id @default(uuid())
+  title        String
+  assigneeName String?         @map("assignee_name")
+  dueDate      DateTime?       @map("due_date")
+  priority     RequestPriority @default(MEDIUM)
+  done         Boolean         @default(false)
+  createdById  String?         @map("created_by_id")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  @@index([dueDate])
+  @@index([done])
+  @@map("tasks")
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  name       String
+  type       String
+  sizeLabel  String   @map("size_label")
+  mimeType   String   @map("mime_type")
+  storedPath String   @map("stored_path")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@map("documents")
 }

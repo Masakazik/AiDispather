@@ -61,6 +61,8 @@ export interface Ticket {
   priority: TicketPriority;
   status: TicketStatus;
   bId: string;
+  /** Resolved building name from live data (overrides the static lookup when present). */
+  buildingName?: string;
   apt: string;
   resident: string;
   phone: string;

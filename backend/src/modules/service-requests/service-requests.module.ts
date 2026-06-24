@@ -8,5 +8,6 @@ import { NOTIFICATIONS_QUEUE } from '../../queue/queue.constants';
   imports: [BullModule.registerQueue({ name: NOTIFICATIONS_QUEUE })],
   controllers: [ServiceRequestsController],
   providers: [ServiceRequestsService],
+  exports: [ServiceRequestsService],
 })
 export class ServiceRequestsModule {}
