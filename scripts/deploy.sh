@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_DIR="${APP_DIR:-/var/www/homedispatcher}"
+APP_DIR="${APP_DIR:-/home/homedispatcher}"
 PM2_NAME="${PM2_NAME:-homedispatcher-api}"
 
 cd "$APP_DIR"
@@ -16,6 +16,9 @@ npm install
 echo "==> Ensure infrastructure is running"
 npm run infra:up
 node scripts/wait-for-infra.mjs
+
+echo "==> Generate Prisma client"
+npm run db:generate
 
 echo "==> Apply database migrations"
 npm run db:deploy
