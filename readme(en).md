@@ -125,14 +125,8 @@ The script:
 | `SKIP_FRONTEND_SYNC` | `0` | `1` — skip static copy to host |
 | `APP_PORT` | `4000` | API port on host |
 
-### Migrating from PM2
-
-```bash
-pm2 delete homedispatcher-api || true
-bash scripts/deploy.sh
-```
-
 The standalone `poverka-max-ai-bot` container on port `:4005` is no longer needed.
+Production deployment is Docker-only (`docker compose`) with no PM2 process.
 
 ### nginx (domcrm.tech)
 

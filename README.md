@@ -152,16 +152,8 @@ SKIP_GIT_PULL=1 bash scripts/deploy.sh
 NO_CACHE_BUILD=1 bash scripts/deploy.sh
 ```
 
-### Миграция с PM2
-
-Если раньше API запускался через PM2:
-
-```bash
-pm2 delete homedispatcher-api || true
-bash scripts/deploy.sh
-```
-
 Старый отдельный бот (`poverka-max-ai-bot` на `:4005`) больше не нужен — логика встроена в backend.
+Продакшен-деплой выполняется только через Docker (`docker compose`) без PM2.
 
 ### nginx (domcrm.tech)
 
