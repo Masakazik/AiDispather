@@ -1,13 +1,14 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Menu } from 'primereact/menu';
 import type { MenuItem } from 'primereact/menuitem';
 import { Drawer, Badge, Avatar, Button, Icon } from '@/components/ui';
 import { useDispatchStore } from '@/store/dispatch.store';
 import { useRequestsStore } from '@/store/requests.store';
-import { useEmployeesStore } from '@/store/employees.store';
+import { useStaffStore } from '@/store/staff.store';
 import { PRIO, STATUS, TICKETS } from '../data';
 import { decorateTicket, ticketComments, ticketTimeline } from '../selectors';
 import type { TicketStatus } from '@/types/dispatch';
+import { displayName } from '@/utils/format';
 
 export function TicketDrawer() {
   const openTicketId = useDispatchStore((s) => s.openTicketId);
@@ -15,8 +16,13 @@ export function TicketDrawer() {
   const items = useRequestsStore((s) => s.items);
   const updateStatus = useRequestsStore((s) => s.updateStatus);
   const assign = useRequestsStore((s) => s.assign);
-  const employees = useEmployeesStore((s) => s.items);
+  const staff = useStaffStore((s) => s.items);
+  const fetchStaff = useStaffStore((s) => s.fetch);
   const assignMenuRef = useRef<Menu>(null);
+
+  useEffect(() => {
+    void fetchStaff();
+  }, [fetchStaff]);
 
   // Prefer live data; fall back to static mock (e.g. resident history links).
   const raw = openTicketId
@@ -34,15 +40,20 @@ export function TicketDrawer() {
     if (closeAfter) closeTicket();
   };
 
-  const assignItems: MenuItem[] =
-    employees.length > 0
-      ? employees.map((e) => ({
-          label: e.name,
-          command: () => {
-            if (isLive) void assign(raw.id, e.name);
-          },
-        }))
-      : [{ label: 'Нет сотрудников', disabled: true }];
+  const assignItems: MenuItem[] = staff
+    .filter((u) => u.isActive && (u.role === 'DISPATCHER' || u.role === 'TECHNICIAN'))
+    .map((u) => {
+      const name = displayName(u);
+      return {
+        label: name,
+        command: () => {
+          if (isLive) void assign(raw.id, name);
+        },
+      };
+    });
+  if (assignItems.length === 0) {
+    assignItems.push({ label: 'Нет сотрудников', disabled: true });
+  }
 
   const facts: { label: string; value: string; color?: string }[] = [
     { label: 'Категория', value: t.category },

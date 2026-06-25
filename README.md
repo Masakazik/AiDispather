@@ -252,7 +252,7 @@ URL webhook в настройках MAX: `https://domcrm.tech/webhooks/max`
 |-------|------|------|----------|
 | GET | `/api/health` | public | DB + Redis |
 | GET/POST/PATCH/DELETE | `/api/tasks` | JWT | Задачи |
-| GET/POST/PATCH/DELETE | `/api/employees` | JWT | Сотрудники |
+| GET/POST/PATCH/DELETE | `/api/staff` | JWT (ADMIN) | Сотрудники компании |
 | GET/POST/DELETE | `/api/documents` | JWT | Документы |
 
 ### MAX / интеграции

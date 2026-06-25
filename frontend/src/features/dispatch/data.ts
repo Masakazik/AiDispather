@@ -2,7 +2,6 @@ import type {
   ActivityItem,
   Building,
   DocItem,
-  Employee,
   MaintenanceItem,
   PriorityMeta,
   Resident,
@@ -44,16 +43,6 @@ export const BUILDINGS: Building[] = [
   { id: 'sp1', name: 'ЖК «Северный Парк»', corp: 'корп. 1', addr: 'пр. Северный, 5', apts: 140, manager: 'Зайцев О.Н.', active: 4, emergency: 0, sla: 95 },
   { id: 'sp2', name: 'ЖК «Северный Парк»', corp: 'корп. 2', addr: 'пр. Северный, 7', apts: 110, manager: 'Зайцев О.Н.', active: 7, emergency: 1, sla: 91 },
   { id: 'rb1', name: 'ЖК «Речной Бриз»', corp: 'корп. 1', addr: 'наб. Речная, 3', apts: 72, manager: 'Соколов И.П.', active: 2, emergency: 0, sla: 98 },
-];
-
-export const EMPLOYEES: Employee[] = [
-  { id: 'e1', name: 'Белкин Роман Сергеевич', role: 'Сантехник', load: 78, active: 4, done: 128, rating: 4.8, presence: 'online', status: 'На выезде' },
-  { id: 'e2', name: 'Ковалёв Артём Игоревич', role: 'Электрик · Лифты', load: 64, active: 3, done: 96, rating: 4.6, presence: 'online', status: 'Свободен' },
-  { id: 'e3', name: 'Громов Павел Олегович', role: 'Сантехник', load: 92, active: 6, done: 154, rating: 4.9, presence: 'away', status: 'На выезде' },
-  { id: 'e4', name: 'Зайцев Олег Николаевич', role: 'Электрик', load: 41, active: 2, done: 73, rating: 4.5, presence: 'online', status: 'Свободен' },
-  { id: 'e5', name: 'Кузьмин Денис Викторович', role: 'Благоустройство', load: 55, active: 3, done: 64, rating: 4.4, presence: 'offline', status: 'Не на смене' },
-  { id: 'e6', name: 'Соколов Игорь Петрович', role: 'Лифтёр', load: 70, active: 3, done: 88, rating: 4.7, presence: 'online', status: 'На выезде' },
-  { id: 'e7', name: 'Морозова Дарья Андреевна', role: 'Старший диспетчер', load: 48, active: 2, done: 212, rating: 4.9, presence: 'online', status: 'В офисе' },
 ];
 
 export const RESIDENTS: Resident[] = [

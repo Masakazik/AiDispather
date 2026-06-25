@@ -28,18 +28,6 @@ export interface Building {
   sla: number;
 }
 
-export interface Employee {
-  id: string;
-  name: string;
-  role: string;
-  load: number;
-  active: number;
-  done: number;
-  rating: number;
-  presence: Presence;
-  status: string;
-}
-
 export interface Resident {
   id: string;
   name: string;

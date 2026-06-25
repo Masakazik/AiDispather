@@ -13,7 +13,6 @@ import { StaffModule } from './modules/staff/staff.module';
 import { ServiceRequestsModule } from './modules/service-requests/service-requests.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { TasksModule } from './modules/tasks/tasks.module';
-import { EmployeesModule } from './modules/employees/employees.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { BotModule } from './modules/bot/bot.module';
 import { HealthModule } from './health/health.module';
@@ -41,7 +40,6 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
     ServiceRequestsModule,
     IntegrationsModule,
     TasksModule,
-    EmployeesModule,
     DocumentsModule,
     BotModule,
     HealthModule,

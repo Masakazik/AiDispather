@@ -1,15 +1,17 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Badge, Avatar, Button, Select, SearchInput, Tabs, type SelectOption } from '@/components/ui';
 import { useDispatchStore } from '@/store/dispatch.store';
 import { useRequestsStore } from '@/store/requests.store';
-import { BUILDINGS, COLUMNS, EMPLOYEES, PRIO, STATUS } from '@/features/dispatch/data';
-import { assigneeShortName, decorateTicket, type DecoratedTicket } from '@/features/dispatch/selectors';
+import { useStaffStore } from '@/store/staff.store';
+import { BUILDINGS, COLUMNS, PRIO, STATUS } from '@/features/dispatch/data';
+import { decorateTicket, type DecoratedTicket } from '@/features/dispatch/selectors';
 import { TicketCard } from '@/features/dispatch/components/TicketCard';
 import { TicketGridCard } from '@/features/dispatch/components/TicketGridCard';
 import { NewRequestDialog } from '@/features/dispatch/components/NewRequestDialog';
 import type { TicketPriority, TicketStatus } from '@/types/dispatch';
+import { displayName } from '@/utils/format';
 
 const VIEW_TABS = [
   { id: 'kanban', label: 'Канбан' },
@@ -34,7 +36,13 @@ export default function RequestsPage() {
     openTicket,
   } = useDispatchStore();
   const items = useRequestsStore((s) => s.items);
+  const staff = useStaffStore((s) => s.items);
+  const fetchStaff = useStaffStore((s) => s.fetch);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    void fetchStaff();
+  }, [fetchStaff]);
 
   const list = useMemo<DecoratedTicket[]>(() => {
     const q = search.trim().toLowerCase();
@@ -72,7 +80,13 @@ export default function RequestsPage() {
   ];
   const assigneeOptions: SelectOption[] = [
     { value: 'all', label: 'Все исполнители' },
-    ...EMPLOYEES.map((e) => ({ value: assigneeShortName(e.name), label: e.name })),
+    ...Array.from(
+      new Set(
+        staff
+          .filter((u) => u.isActive && (u.role === 'DISPATCHER' || u.role === 'TECHNICIAN'))
+          .map((u) => displayName(u)),
+      ),
+    ).map((name) => ({ value: name, label: name })),
   ];
 
   return (
