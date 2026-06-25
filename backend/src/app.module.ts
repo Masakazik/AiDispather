@@ -8,6 +8,8 @@ import { RedisModule } from './redis/redis.module';
 import { QueueModule } from './queue/queue.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { CompaniesModule } from './modules/companies/companies.module';
+import { StaffModule } from './modules/staff/staff.module';
 import { ServiceRequestsModule } from './modules/service-requests/service-requests.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { TasksModule } from './modules/tasks/tasks.module';
@@ -34,6 +36,8 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
     QueueModule,
     AuthModule,
     UsersModule,
+    CompaniesModule,
+    StaffModule,
     ServiceRequestsModule,
     IntegrationsModule,
     TasksModule,

@@ -1,6 +1,8 @@
 import { NavLink } from 'react-router-dom';
-import { NAV_SECTIONS } from '@/constants/navigation';
+import { navSectionsForRole } from '@/constants/navigation';
 import { Icon, Avatar } from '@/components/ui';
+import { useAuth } from '@/hooks/useAuth';
+import { displayName } from '@/utils/format';
 import { cn } from '@/utils/cn';
 
 interface SidebarProps {
@@ -8,7 +10,18 @@ interface SidebarProps {
   onNavigate: () => void;
 }
 
+const ROLE_LABEL: Record<string, string> = {
+  ADMIN: 'Администратор',
+  DISPATCHER: 'Старший диспетчер',
+  TECHNICIAN: 'Исполнитель',
+  RESIDENT: 'Житель',
+};
+
 export function Sidebar({ open, onNavigate }: SidebarProps) {
+  const { user } = useAuth();
+  const sections = navSectionsForRole(user?.role);
+  const name = displayName(user) || 'Пользователь';
+
   return (
     <aside className={cn('app-sidebar', open && 'app-sidebar--open')}>
       <div className="app-sidebar__brand">
@@ -21,7 +34,7 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
       </div>
 
       <nav className="app-sidebar__nav">
-        {NAV_SECTIONS.map((section) => (
+        {sections.map((section) => (
           <div key={section.title} className="app-sidebar__section">
             <div className="app-sidebar__section-title">{section.title}</div>
             {section.items.map((item) => (
@@ -48,10 +61,12 @@ export function Sidebar({ open, onNavigate }: SidebarProps) {
       </nav>
 
       <div className="app-sidebar__footer">
-        <Avatar name="Дарья Морозова" size="sm" presence="online" />
+        <Avatar name={name} size="sm" presence="online" />
         <div className="app-sidebar__footer-info">
-          <div className="app-sidebar__footer-name">Дарья Морозова</div>
-          <div className="app-sidebar__footer-role">Старший диспетчер</div>
+          <div className="app-sidebar__footer-name">{name}</div>
+          <div className="app-sidebar__footer-role">
+            {user ? (ROLE_LABEL[user.role] ?? user.role) : ''}
+          </div>
         </div>
       </div>
     </aside>

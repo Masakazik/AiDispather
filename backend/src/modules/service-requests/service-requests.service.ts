@@ -59,8 +59,22 @@ export class ServiceRequestsService implements OnModuleInit {
     return Number(rows[0].nextval);
   }
 
-  async findAll(query: QueryServiceRequestDto): Promise<PaginatedResult<ServiceRequestWithRelations>> {
+  /** First active company — used to attribute leads created by the MAX bot. */
+  async resolveDefaultCompanyId(): Promise<string | null> {
+    const company = await this.prisma.company.findFirst({
+      where: { isActive: true },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
+    return company?.id ?? null;
+  }
+
+  async findAll(
+    query: QueryServiceRequestDto,
+    companyId: string | null,
+  ): Promise<PaginatedResult<ServiceRequestWithRelations>> {
     const where: Prisma.ServiceRequestWhereInput = {
+      companyId: companyId ?? undefined,
       ...(query.status ? { status: query.status } : {}),
       ...(query.priority ? { priority: query.priority } : {}),
     };
@@ -106,11 +120,11 @@ export class ServiceRequestsService implements OnModuleInit {
 
   async create(
     dto: CreateServiceRequestDto,
-    createdById?: string,
+    opts: { createdById?: string; companyId?: string | null } = {},
   ): Promise<ServiceRequestWithRelations> {
     const number = await this.nextNumber();
     const request = await this.prisma.serviceRequest.create({
-      data: { ...dto, number, createdById },
+      data: { ...dto, number, createdById: opts.createdById, companyId: opts.companyId ?? null },
       include: includeRelations,
     });
     await this.notifications.add('request-created', {
@@ -121,8 +135,12 @@ export class ServiceRequestsService implements OnModuleInit {
     return request;
   }
 
-  async update(id: string, dto: UpdateServiceRequestDto): Promise<ServiceRequestWithRelations> {
-    await this.ensureExists(id);
+  async update(
+    id: string,
+    dto: UpdateServiceRequestDto,
+    companyId: string | null,
+  ): Promise<ServiceRequestWithRelations> {
+    await this.ensureExists(id, companyId);
     const completedAt = dto.status === RequestStatus.DONE ? new Date() : undefined;
     const request = await this.prisma.serviceRequest.update({
       where: { id },
@@ -140,14 +158,16 @@ export class ServiceRequestsService implements OnModuleInit {
     return request;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.ensureExists(id);
+  async remove(id: string, companyId: string | null): Promise<void> {
+    await this.ensureExists(id, companyId);
     await this.prisma.serviceRequest.delete({ where: { id } });
     await this.redis.del(`${CACHE_PREFIX}${id}`);
   }
 
-  private async ensureExists(id: string): Promise<void> {
-    const count = await this.prisma.serviceRequest.count({ where: { id } });
+  private async ensureExists(id: string, companyId: string | null): Promise<void> {
+    const count = await this.prisma.serviceRequest.count({
+      where: { id, companyId: companyId ?? undefined },
+    });
     if (count === 0) throw new NotFoundException('Service request not found');
   }
 }

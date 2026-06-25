@@ -60,7 +60,12 @@ export class AuthService {
   }
 
   private buildAuthResult(user: User): AuthResult {
-    const payload: JwtPayload = { sub: user.id, email: user.email, role: user.role };
+    const payload: JwtPayload = {
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+      companyId: user.companyId,
+    };
     return {
       accessToken: this.jwt.sign(payload),
       user: this.toPublicUser(user),

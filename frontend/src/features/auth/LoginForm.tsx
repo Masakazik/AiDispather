@@ -94,9 +94,6 @@ export function LoginForm() {
         className="login-form__submit"
       />
 
-      <div className="login-form__demo">
-        Демо-доступ: admin@homedispatcher.local / password123
-      </div>
     </form>
   );
 }

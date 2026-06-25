@@ -1,4 +1,5 @@
 import type { GlyphName } from '@/components/ui';
+import type { UserRole } from '@/types/user';
 import { ROUTES } from './routes';
 
 export interface NavScreen {
@@ -9,6 +10,8 @@ export interface NavScreen {
   /** Header subtitle shown in the topbar for this screen. */
   sub: string;
   count?: number;
+  /** When set, the item is only shown to users with one of these roles. */
+  roles?: UserRole[];
 }
 
 export interface NavSection {
@@ -40,5 +43,13 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
 ];
+
+/** Filters nav sections by the current user's role, dropping empty sections. */
+export function navSectionsForRole(role: UserRole | undefined): NavSection[] {
+  return NAV_SECTIONS.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => !item.roles || (role && item.roles.includes(role))),
+  })).filter((section) => section.items.length > 0);
+}
 
 export const ALL_SCREENS: NavScreen[] = NAV_SECTIONS.flatMap((s) => s.items);

@@ -23,8 +23,8 @@ export class ServiceRequestsController {
   constructor(private readonly service: ServiceRequestsService) {}
 
   @Get()
-  findAll(@Query() query: QueryServiceRequestDto) {
-    return this.service.findAll(query);
+  findAll(@Query() query: QueryServiceRequestDto, @CurrentUser() user: AuthenticatedUser) {
+    return this.service.findAll(query, user.companyId);
   }
 
   @Get(':id')
@@ -34,17 +34,21 @@ export class ServiceRequestsController {
 
   @Post()
   create(@Body() dto: CreateServiceRequestDto, @CurrentUser() user: AuthenticatedUser) {
-    return this.service.create(dto, user.id);
+    return this.service.create(dto, { createdById: user.id, companyId: user.companyId });
   }
 
   @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateServiceRequestDto) {
-    return this.service.update(id, dto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateServiceRequestDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.service.update(id, dto, user.companyId);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.remove(id);
+  remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.service.remove(id, user.companyId);
   }
 }

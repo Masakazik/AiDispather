@@ -21,23 +21,27 @@ export class TasksController {
   constructor(private readonly service: TasksService) {}
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@CurrentUser() user: AuthenticatedUser) {
+    return this.service.findAll(user.companyId);
   }
 
   @Post()
   create(@Body() dto: CreateTaskDto, @CurrentUser() user: AuthenticatedUser) {
-    return this.service.create(dto, user.id);
+    return this.service.create(dto, user.id, user.companyId);
   }
 
   @Patch(':id')
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateTaskDto) {
-    return this.service.update(id, dto);
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateTaskDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.service.update(id, dto, user.companyId);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.remove(id);
+  remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.service.remove(id, user.companyId);
   }
 }

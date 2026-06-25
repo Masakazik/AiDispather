@@ -69,30 +69,56 @@ const TICKETS: SeedTicket[] = [
   { number: 10240, title: 'Замена лампы в подъезде', description: 'Перегорела лампа на лестничной площадке 7 этажа.', category: 'Электрика', priority: RequestPriority.LOW, status: RequestStatus.DONE, source: RequestSource.TELEGRAM, bKey: 'sp1', apt: 'кв. 89', resident: 'Орлова Е.Б.', phone: '+7 926 305-66-90', assignee: 'Зайцев О.Н.' },
 ];
 
+const COMPANY_ID = '22222222-0000-0000-0000-000000000001';
+
 async function main(): Promise<void> {
   const passwordHash = await bcrypt.hash('password123', 10);
 
+  // Demo управляющая компания (tenant).
+  const company = await prisma.company.upsert({
+    where: { id: COMPANY_ID },
+    update: { name: 'УК «Демо-Сервис»', isActive: true },
+    create: { id: COMPANY_ID, name: 'УК «Демо-Сервис»', inn: '7701234567', address: 'г. Москва, ул. Парусная, 12' },
+  });
+
+  // Platform administrator — no company, only the admin panel.
+  await prisma.user.upsert({
+    where: { email: 'superadmin@homedispatcher.local' },
+    update: { role: UserRole.SUPERADMIN, companyId: null },
+    create: {
+      email: 'superadmin@homedispatcher.local',
+      passwordHash,
+      firstName: 'Платформенный',
+      lastName: 'Администратор',
+      role: UserRole.SUPERADMIN,
+    },
+  });
+
+  // Company admin (УК login) — manages the demo company in the main app.
   const admin = await prisma.user.upsert({
     where: { email: 'admin@homedispatcher.local' },
-    update: {},
+    update: { role: UserRole.ADMIN, companyId: company.id },
     create: {
       email: 'admin@homedispatcher.local',
       passwordHash,
       firstName: 'Дарья',
       lastName: 'Морозова',
       role: UserRole.ADMIN,
+      companyId: company.id,
     },
   });
 
+  // A staff account inside the company.
   await prisma.user.upsert({
     where: { email: 'dispatcher@homedispatcher.local' },
-    update: {},
+    update: { role: UserRole.DISPATCHER, companyId: company.id },
     create: {
       email: 'dispatcher@homedispatcher.local',
       passwordHash,
       firstName: 'Олег',
       lastName: 'Зайцев',
       role: UserRole.DISPATCHER,
+      companyId: company.id,
     },
   });
 
@@ -120,6 +146,7 @@ async function main(): Promise<void> {
       assigneeName: t.assignee,
       buildingId: BUILDING_IDS[t.bKey],
       createdById: admin.id,
+      companyId: COMPANY_ID,
     })),
   });
 
@@ -133,7 +160,7 @@ async function main(): Promise<void> {
         { name: 'Кузьмин Денис Викторович', role: 'Благоустройство', presence: EmployeePresence.OFFLINE, activeCount: 3, doneCount: 64, rating: 4.4 },
         { name: 'Соколов Игорь Петрович', role: 'Лифтёр', presence: EmployeePresence.ONLINE, activeCount: 3, doneCount: 88, rating: 4.7 },
         { name: 'Морозова Дарья Андреевна', role: 'Старший диспетчер', presence: EmployeePresence.ONLINE, activeCount: 2, doneCount: 212, rating: 4.9 },
-      ],
+      ].map((e) => ({ ...e, companyId: COMPANY_ID })),
     });
   }
 
@@ -146,12 +173,18 @@ async function main(): Promise<void> {
         { title: 'Проверить заявки без исполнителя', assigneeName: 'Громов П.О.', dueDate: addDays(0), priority: RequestPriority.HIGH, done: false, createdById: admin.id },
         { title: 'Подготовить материалы к ОСС', assigneeName: 'Морозова Д.А.', dueDate: addDays(6), priority: RequestPriority.LOW, done: false, createdById: admin.id },
         { title: 'Обновить регламент аварийной службы', assigneeName: 'Зайцев О.Н.', dueDate: addDays(4), priority: RequestPriority.LOW, done: true, createdById: admin.id },
-      ],
+      ].map((t) => ({ ...t, companyId: COMPANY_ID })),
     });
   }
 
-  console.log(`Seed complete: ${BUILDINGS.length} buildings, ${TICKETS.length} requests.`);
-  console.log('Login with: admin@homedispatcher.local / password123');
+  // Backfill any legacy rows created before multi-tenancy to the demo company.
+  await prisma.serviceRequest.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
+  await prisma.employee.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
+  await prisma.task.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
+
+  console.log(`Seed complete: 1 company, ${BUILDINGS.length} buildings, ${TICKETS.length} requests.`);
+  console.log('Platform admin: superadmin@homedispatcher.local / password123');
+  console.log('Company (УК) admin: admin@homedispatcher.local / password123');
 }
 
 main()

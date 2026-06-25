@@ -53,19 +53,24 @@ export class IntegrationsService {
 
     const summary = dto.summary?.trim() || 'Обращение из MAX';
     const priority = PRIORITY_MAP[dto.priority?.toLowerCase() ?? ''] ?? RequestPriority.MEDIUM;
+    // Until per-company bot routing exists, MAX leads land in the first company.
+    const companyId = await this.serviceRequests.resolveDefaultCompanyId();
 
-    const request = await this.serviceRequests.create({
-      title: summary.slice(0, 200),
-      description: summary,
-      priority,
-      source: RequestSource.MAX,
-      category: dto.category,
-      residentName: dto.resident_name,
-      residentPhone: dto.phone,
-      apartmentLabel: dto.address,
-      externalChatId: dto.external_chat_id,
-      externalUserId: dto.external_user_id,
-    });
+    const request = await this.serviceRequests.create(
+      {
+        title: summary.slice(0, 200),
+        description: summary,
+        priority,
+        source: RequestSource.MAX,
+        category: dto.category,
+        residentName: dto.resident_name,
+        residentPhone: dto.phone,
+        apartmentLabel: dto.address,
+        externalChatId: dto.external_chat_id,
+        externalUserId: dto.external_user_id,
+      },
+      { companyId },
+    );
 
     this.logger.log(`MAX lead created: #${request.number} (${request.category ?? 'без категории'})`);
     return {

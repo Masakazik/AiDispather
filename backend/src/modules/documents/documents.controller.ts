@@ -20,14 +20,16 @@ import { randomUUID } from 'node:crypto';
 import type { Response } from 'express';
 import { DocumentsService } from './documents.service';
 import { UPLOAD_DIR, ensureUploadDir } from './documents.constants';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../../common/interfaces/authenticated-user.interface';
 
 @Controller('documents')
 export class DocumentsController {
   constructor(private readonly service: DocumentsService) {}
 
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@CurrentUser() user: AuthenticatedUser) {
+    return this.service.findAll(user.companyId);
   }
 
   @Post()
@@ -43,16 +45,17 @@ export class DocumentsController {
       limits: { fileSize: 25 * 1024 * 1024 },
     }),
   )
-  upload(@UploadedFile() file: Express.Multer.File) {
-    return this.service.createFromUpload(file);
+  upload(@UploadedFile() file: Express.Multer.File, @CurrentUser() user: AuthenticatedUser) {
+    return this.service.createFromUpload(file, user.companyId);
   }
 
   @Get(':id/download')
   async download(
     @Param('id', ParseUUIDPipe) id: string,
     @Res({ passthrough: true }) res: Response,
+    @CurrentUser() user: AuthenticatedUser,
   ): Promise<StreamableFile> {
-    const doc = await this.service.findOne(id);
+    const doc = await this.service.findOne(id, user.companyId);
     const encoded = encodeURIComponent(doc.name);
     res.set({
       'Content-Type': doc.mimeType || 'application/octet-stream',
@@ -63,7 +66,7 @@ export class DocumentsController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id', ParseUUIDPipe) id: string) {
-    return this.service.remove(id);
+  remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.service.remove(id, user.companyId);
   }
 }
