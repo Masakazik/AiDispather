@@ -782,6 +782,17 @@
 .table-unassigned {
   color: var(--text-tertiary);
 }
+.table-link,
+.ticket-link {
+  color: var(--hd-blue-600);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 600;
+}
+.table-link:hover,
+.ticket-link:hover {
+  text-decoration: underline;
+}
 
 /* ===== Generic card grids ===== */
 .cards-grid {
@@ -1766,6 +1777,244 @@
   text-overflow: ellipsis;
 }
 
+/* ===== Chats ===== */
+.chats-page {
+  gap: 16px;
+}
+.chats-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.chats-toolbar__search {
+  flex: 1;
+  min-width: 320px;
+}
+.chats-toolbar__select {
+  width: 220px;
+}
+.chats-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--status-success-solid);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--status-success-solid) 8%, white);
+  color: var(--text-primary);
+}
+.chats-info--error {
+  border-color: var(--status-error-solid);
+  background: color-mix(in srgb, var(--status-error-solid) 8%, white);
+}
+.chats-layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr) minmax(290px, 360px);
+  gap: 16px;
+  min-height: 600px;
+}
+.chats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+}
+.chats-list__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.chats-list__item {
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: var(--surface-card);
+  text-align: left;
+  padding: 12px;
+  cursor: pointer;
+  transition: var(--transition-colors);
+}
+.chats-list__item:hover {
+  background: var(--surface-sunken);
+}
+.chats-list__item--active {
+  border-color: var(--hd-blue-400);
+  box-shadow: 0 0 0 2px var(--action-primary-ring);
+}
+.chats-list__top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.chats-list__building {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.chats-list__time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+.chats-list__meta {
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.chats-list__preview {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.chats-thread {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.chats-thread__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.chats-thread__sub {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.chats-thread__messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 4px;
+}
+.chats-message {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.chats-message--outgoing {
+  flex-direction: row-reverse;
+}
+.chats-message__bubble {
+  max-width: 88%;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 10px 12px;
+  background: var(--surface-card);
+}
+.chats-message--outgoing .chats-message__bubble {
+  background: var(--surface-brand-subtle);
+  border-color: var(--hd-blue-200);
+}
+.chats-message__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+.chats-message__author {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.chats-message__text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.chats-message__text--expanded {
+  display: block;
+}
+.chats-message__actions {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.chats-message__action {
+  border: none;
+  background: transparent;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 0;
+}
+.chats-message__action:hover {
+  color: var(--status-error-solid);
+}
+.chats-message__action:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.chats-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chats-actions__block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.chats-reply-context {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-sunken);
+  border-radius: 12px;
+  padding: 10px;
+}
+.chats-reply-context__title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.chats-reply-context__text {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.chats-actions__sub {
+  margin: -4px 0 0;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.chats-actions textarea.p-inputtextarea {
+  width: 100%;
+  border-radius: var(--radius-input);
+  border: 1px solid var(--action-secondary-border);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  color: var(--text-primary);
+  padding: 10px 12px;
+}
+.chats-actions textarea.p-inputtextarea:focus {
+  border-color: var(--action-primary-bg);
+  box-shadow: 0 0 0 2px var(--action-primary-ring);
+}
+
 /* ===== Responsive grids ===== */
 @media (min-width: 1600px) {
   .calendar-layout {
@@ -1788,6 +2037,15 @@
   .calendar-layout {
     grid-template-columns: 1fr;
   }
+  .chats-layout {
+    grid-template-columns: 1fr;
+    min-height: 0;
+  }
+  .chats-list,
+  .chats-thread,
+  .chats-actions {
+    max-height: none;
+  }
 }
 @media (max-width: 640px) {
   .kpi-grid,
@@ -1800,6 +2058,12 @@
   .requests-filters__select--assignee {
     width: 100%;
     min-width: 0;
+    flex: 1 1 100%;
+  }
+  .chats-toolbar__search,
+  .chats-toolbar__select {
+    min-width: 0;
+    width: 100%;
     flex: 1 1 100%;
   }
   /* Stack the two tab groups and let each scroll horizontally so no

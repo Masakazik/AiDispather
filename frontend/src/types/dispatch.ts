@@ -1,7 +1,7 @@
 import type { BadgeColor } from '@/components/ui';
 import type { GlyphName } from '@/components/ui';
 
-export type TicketStatus = 'new' | 'assigned' | 'in_progress' | 'waiting' | 'done' | 'closed';
+export type TicketStatus = 'new' | 'assigned' | 'in_progress' | 'done' | 'closed';
 export type TicketPriority = 'low' | 'medium' | 'high' | 'critical';
 export type SlaState = 'ok' | 'warn' | 'over';
 export type Presence = 'online' | 'away' | 'offline';
@@ -63,6 +63,9 @@ export interface Ticket {
   photos: number;
   chat: number;
   source: string;
+  externalChatId?: string | null;
+  externalMessageId?: string | null;
+  maxMessageUrl?: string | null;
   ai: boolean;
   aiConf: number;
   aiNote: string;

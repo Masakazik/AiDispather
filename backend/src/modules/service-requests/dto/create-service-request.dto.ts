@@ -63,6 +63,11 @@ export class CreateServiceRequestDto {
   externalUserId?: string;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  externalMessageId?: string;
+
+  @IsOptional()
   @IsUUID()
   buildingId?: string;
 

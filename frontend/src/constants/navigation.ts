@@ -25,6 +25,8 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { id: 'dashboard', label: 'Дашборд', icon: 'IconGauge', to: ROUTES.dashboard, sub: 'Обзор по всем объектам' },
       { id: 'requests', label: 'Заявки', icon: 'IconTicket', to: ROUTES.requests, sub: 'Управление обращениями' },
+      { id: 'chats', label: 'Чаты (в работе)', icon: 'IconChatsTeardrop', to: ROUTES.chats, sub: 'Сообщения по домам' },
+      { id: 'buildings', label: 'Дома (в разработке)', icon: 'IconBuildings', to: ROUTES.buildings, sub: 'Список домов УК' },
       { id: 'staff', label: 'Сотрудники', icon: 'IconIdentificationBadge', to: ROUTES.staff, sub: 'Команда и исполнители' },
     ],
   },

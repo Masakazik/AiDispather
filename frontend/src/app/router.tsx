@@ -13,6 +13,8 @@ import { ROUTES } from '@/constants/routes';
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const RequestsPage = lazy(() => import('@/pages/RequestsPage'));
+const ChatsPage = lazy(() => import('@/pages/ChatsPage'));
+const BuildingsPage = lazy(() => import('@/pages/BuildingsPage'));
 const StaffPage = lazy(() => import('@/pages/StaffPage'));
 const CalendarPage = lazy(() => import('@/pages/CalendarPage'));
 const TasksPage = lazy(() => import('@/pages/TasksPage'));
@@ -52,6 +54,8 @@ export function AppRouter() {
             <Route element={<MainLayout />}>
               <Route path={ROUTES.dashboard} element={<DashboardPage />} />
               <Route path={ROUTES.requests} element={<RequestsPage />} />
+              <Route path={ROUTES.chats} element={<ChatsPage />} />
+              <Route path={ROUTES.buildings} element={<BuildingsPage />} />
               <Route path={ROUTES.staff} element={<StaffPage />} />
               <Route path={ROUTES.calendar} element={<CalendarPage />} />
               <Route path={ROUTES.tasks} element={<TasksPage />} />

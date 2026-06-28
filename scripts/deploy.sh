@@ -21,6 +21,8 @@ NO_CACHE_BUILD="${NO_CACHE_BUILD:-0}"
 HEALTH_PATH="${HEALTH_PATH:-/api/health}"
 HEALTH_RETRIES="${HEALTH_RETRIES:-12}"
 HEALTH_SLEEP_SEC="${HEALTH_SLEEP_SEC:-5}"
+CHAT_THREADS_PATH="${CHAT_THREADS_PATH:-/api/max/chats/threads}"
+CHAT_THREADS_EXPECTED_CODES="${CHAT_THREADS_EXPECTED_CODES:-401,403}"
 
 export APP_PORT
 export APP_ENV_FILE
@@ -88,6 +90,29 @@ if [[ "${health_ok}" != "1" ]]; then
 fi
 
 echo "✅ Health check успешен"
+
+echo "🧪 Smoke-check API маршрутов..."
+smoke_ok=0
+for ((attempt = 1; attempt <= HEALTH_RETRIES; attempt++)); do
+  chat_code="$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:${APP_PORT}${CHAT_THREADS_PATH}" || true)"
+  if [[ ",${CHAT_THREADS_EXPECTED_CODES}," == *",${chat_code},"* ]]; then
+    smoke_ok=1
+    break
+  fi
+  echo "   smoke попытка ${attempt}/${HEALTH_RETRIES}: ${CHAT_THREADS_PATH} -> ${chat_code} (ожидалось ${CHAT_THREADS_EXPECTED_CODES})"
+  sleep "${HEALTH_SLEEP_SEC}"
+done
+
+if [[ "${smoke_ok}" != "1" ]]; then
+  echo "⚠️ Smoke-check не прошел. Проверка endpoint ${CHAT_THREADS_PATH}."
+  echo "   Ожидались коды: ${CHAT_THREADS_EXPECTED_CODES}"
+  echo "   Фактический ответ:"
+  curl -i -sS "http://127.0.0.1:${APP_PORT}${CHAT_THREADS_PATH}" || true
+  run_compose logs --tail=120 app || true
+  exit 1
+fi
+
+echo "✅ Smoke-check успешен (${CHAT_THREADS_PATH})"
 
 if [[ "${SKIP_FRONTEND_SYNC}" != "1" ]]; then
   echo "📦 Синхронизируем frontend/dist для nginx на хосте..."

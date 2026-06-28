@@ -68,6 +68,7 @@ export class IntegrationsService {
         apartmentLabel: dto.address,
         externalChatId: dto.external_chat_id,
         externalUserId: dto.external_user_id,
+        externalMessageId: dto.external_message_id,
       },
       { companyId },
     );

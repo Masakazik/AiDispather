@@ -2,7 +2,6 @@ export type ApiRequestStatus =
   | 'NEW'
   | 'ASSIGNED'
   | 'IN_PROGRESS'
-  | 'WAITING'
   | 'DONE'
   | 'CLOSED';
 export type ApiRequestPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
@@ -29,6 +28,7 @@ export interface ApiServiceRequest {
   apartmentLabel: string | null;
   assigneeName: string | null;
   externalChatId: string | null;
+  externalMessageId: string | null;
   buildingId: string | null;
   building: ApiBuilding | null;
   assignedToId: string | null;

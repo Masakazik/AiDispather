@@ -179,8 +179,6 @@ async function main(): Promise<void> {
 
   // Backfill any legacy rows created before multi-tenancy to the demo company.
   await prisma.serviceRequest.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
-  // The "Ожидает" column was removed — move any waiting requests to "Назначена".
-  await prisma.serviceRequest.updateMany({ where: { status: RequestStatus.WAITING }, data: { status: RequestStatus.ASSIGNED } });
   await prisma.employee.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
   await prisma.task.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
 

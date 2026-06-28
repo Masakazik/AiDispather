@@ -1,6 +1,7 @@
 import type { GlyphName } from '@/components/ui';
 import type { Ticket, TicketPriority, TicketStatus } from '@/types/dispatch';
 import type { ApiRequestSource, ApiServiceRequest } from '@/types/service-request';
+import { buildMaxMessageLink } from '@/utils/max-link';
 
 const SOURCE_LABEL: Record<ApiRequestSource, string> = {
   MAX: 'MAX',
@@ -76,6 +77,9 @@ export function apiToTicket(row: ApiServiceRequest): Ticket {
     photos: 0,
     chat: 0,
     source: SOURCE_LABEL[row.source],
+    externalChatId: row.externalChatId,
+    externalMessageId: row.externalMessageId,
+    maxMessageUrl: buildMaxMessageLink(row.externalChatId, row.externalMessageId),
     ai: Boolean(row.description),
     aiConf: 0,
     aiNote: row.description ?? '',

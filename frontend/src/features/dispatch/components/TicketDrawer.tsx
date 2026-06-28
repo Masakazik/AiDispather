@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { Menu } from 'primereact/menu';
 import type { MenuItem } from 'primereact/menuitem';
 import { Drawer, Badge, Avatar, Button, Icon } from '@/components/ui';
@@ -58,9 +58,25 @@ export function TicketDrawer() {
     assignItems.push({ label: 'Нет сотрудников', disabled: true });
   }
 
-  const facts: { label: string; value: string; color?: string }[] = [
+  const facts: { label: string; value: ReactNode; color?: string }[] = [
     { label: 'Категория', value: t.category },
     { label: 'Источник', value: t.source },
+    {
+      label: 'Сообщение MAX',
+      value: t.maxMessageUrl ? (
+        <a
+          href={t.maxMessageUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="ticket-link"
+          onClick={(e) => e.stopPropagation()}
+        >
+          Открыть в MAX
+        </a>
+      ) : (
+        '—'
+      ),
+    },
     { label: 'Дом', value: [t.buildingName, t.corp].filter(Boolean).join(', ') || '—' },
     { label: 'Квартира', value: t.apt },
     { label: 'Житель', value: t.resident },

@@ -1,7 +1,7 @@
 import type { GlyphName } from '@/components/ui';
 import type { ApiRequestStatus, ApiServiceRequest } from '@/types/service-request';
 
-const OPEN_STATUSES: ApiRequestStatus[] = ['NEW', 'ASSIGNED', 'IN_PROGRESS', 'WAITING'];
+const OPEN_STATUSES: ApiRequestStatus[] = ['NEW', 'ASSIGNED', 'IN_PROGRESS'];
 const WEEKDAYS = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
 
 export const isOpen = (r: ApiServiceRequest) => OPEN_STATUSES.includes(r.status);
@@ -51,7 +51,6 @@ const STATUS_LABEL: Record<ApiRequestStatus, string> = {
   NEW: 'Новые',
   ASSIGNED: 'Назначенные',
   IN_PROGRESS: 'В работе',
-  WAITING: 'Ожидают',
   DONE: 'Выполнены',
   CLOSED: 'Закрыты',
 };
@@ -59,7 +58,6 @@ const STATUS_COLOR: Record<ApiRequestStatus, string> = {
   NEW: 'var(--hd-neutral-400)',
   ASSIGNED: 'var(--hd-blue-500)',
   IN_PROGRESS: 'var(--hd-amber-500)',
-  WAITING: 'var(--hd-neutral-300)',
   DONE: 'var(--hd-green-500)',
   CLOSED: 'var(--hd-neutral-300)',
 };
@@ -140,7 +138,7 @@ export function dashboardMetrics(rows: ApiServiceRequest[]): DashboardMetrics {
     .slice(0, 6)
     .map(([label, count], i) => ({ label, count, color: CATEGORY_PALETTE[i % CATEGORY_PALETTE.length] }));
 
-  const statusSegments = (['NEW', 'ASSIGNED', 'IN_PROGRESS', 'WAITING', 'DONE'] as ApiRequestStatus[])
+  const statusSegments = (['NEW', 'ASSIGNED', 'IN_PROGRESS', 'DONE'] as ApiRequestStatus[])
     .map((s) => ({
       label: STATUS_LABEL[s],
       count: rows.filter((r) => r.status === s).length,

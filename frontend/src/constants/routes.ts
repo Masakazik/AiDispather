@@ -3,6 +3,7 @@ export const ROUTES = {
   login: '/login',
   dashboard: '/',
   requests: '/requests',
+  chats: '/chats',
   residents: '/residents',
   buildings: '/buildings',
   staff: '/staff',

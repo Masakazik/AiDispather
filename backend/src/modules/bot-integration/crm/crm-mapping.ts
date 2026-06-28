@@ -11,6 +11,7 @@ export function buildMaxWebhookDto(payload: CrmProblemTicketPayload): MaxWebhook
     user_message: payload.originalMessage,
     external_chat_id: payload.chatId,
     external_user_id: payload.userId,
+    external_message_id: payload.messageId,
   };
 
   if (payload.username?.trim()) {

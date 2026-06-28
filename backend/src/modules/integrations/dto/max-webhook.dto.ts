@@ -41,6 +41,11 @@ export class MaxWebhookDto {
   @IsOptional()
   @IsString()
   @MaxLength(160)
+  external_message_id?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
   resident_name?: string;
 
   @IsOptional()

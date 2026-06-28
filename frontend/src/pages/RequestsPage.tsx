@@ -196,7 +196,7 @@ export default function RequestsPage() {
             <Column
               header="Приоритет"
               body={(r: DecoratedTicket) => (
-                <Badge color={PRIO[r.priority].color} size="sm" dot={r.priority !== 'low'}>
+                <Badge color={PRIO[r.priority].color} size="sm">
                   {r.prioLabel}
                 </Badge>
               )}
@@ -208,6 +208,24 @@ export default function RequestsPage() {
                   {r.statusLabel}
                 </Badge>
               )}
+            />
+            <Column
+              header="MAX"
+              body={(r: DecoratedTicket) =>
+                r.maxMessageUrl ? (
+                  <a
+                    href={r.maxMessageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="table-link"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    Открыть
+                  </a>
+                ) : (
+                  <span className="table-unassigned">—</span>
+                )
+              }
             />
             <Column
               header="Исполнитель"
