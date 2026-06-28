@@ -19,6 +19,7 @@ function useCurrentScreen() {
 
 /** Authenticated application shell: responsive sidebar + topbar + content. */
 export function MainLayout() {
+  const REQUESTS_POLL_MS = 10_000;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const screen = useCurrentScreen();
   const fetchRequests = useRequestsStore((s) => s.fetch);
@@ -29,6 +30,30 @@ export function MainLayout() {
     void fetchRequests();
     void fetchTasks();
   }, [fetchRequests, fetchTasks]);
+
+  // Keep requests in sync with backend updates (bot/manual/other users)
+  // so new tickets appear without a page reload.
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      void fetchRequests();
+    }, REQUESTS_POLL_MS);
+
+    const onFocus = () => void fetchRequests();
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        void fetchRequests();
+      }
+    };
+
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onVisibility);
+
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [fetchRequests]);
 
   return (
     <div className="app-shell">

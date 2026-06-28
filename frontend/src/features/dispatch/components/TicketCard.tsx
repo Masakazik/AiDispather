@@ -1,14 +1,29 @@
+import { useState } from 'react';
 import { Badge, Avatar, Icon } from '@/components/ui';
 import { useDispatchStore } from '@/store/dispatch.store';
 import { PRIO } from '../data';
 import type { DecoratedTicket } from '../selectors';
 
-/** Compact Kanban card. */
+/** Compact Kanban card. Draggable between status columns (Bitrix24-style). */
 export function TicketCard({ ticket }: { ticket: DecoratedTicket }) {
   const openTicket = useDispatchStore((s) => s.openTicket);
+  const [dragging, setDragging] = useState(false);
 
   return (
-    <article className="ticket-card" onClick={() => openTicket(ticket.id)}>
+    <article
+      className={`ticket-card${dragging ? ' ticket-card--dragging' : ''}`}
+      draggable
+      onClick={() => {
+        if (!dragging) openTicket(ticket.id);
+      }}
+      onDragStart={(e) => {
+        e.dataTransfer.setData('text/ticket-id', ticket.id);
+        e.dataTransfer.setData('text/ticket-status', ticket.status);
+        e.dataTransfer.effectAllowed = 'move';
+        setDragging(true);
+      }}
+      onDragEnd={() => setDragging(false)}
+    >
       {ticket.emergency && <span className="ticket-card__emergency" />}
       <div className="ticket-card__top">
         <span className="ticket-card__num tabular">{ticket.num}</span>

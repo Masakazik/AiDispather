@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type DragEvent as ReactDragEvent } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Badge, Avatar, Button, Select, SearchInput, Tabs, type SelectOption } from '@/components/ui';
@@ -36,9 +36,19 @@ export default function RequestsPage() {
     openTicket,
   } = useDispatchStore();
   const items = useRequestsStore((s) => s.items);
+  const updateStatus = useRequestsStore((s) => s.updateStatus);
   const staff = useStaffStore((s) => s.items);
   const fetchStaff = useStaffStore((s) => s.fetch);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [dragOverCol, setDragOverCol] = useState<TicketStatus | null>(null);
+
+  const onDropToColumn = (e: ReactDragEvent, target: TicketStatus) => {
+    e.preventDefault();
+    setDragOverCol(null);
+    const id = e.dataTransfer.getData('text/ticket-id');
+    const from = e.dataTransfer.getData('text/ticket-status');
+    if (id && from !== target) void updateStatus(id, target);
+  };
 
   useEffect(() => {
     void fetchStaff();
@@ -128,7 +138,19 @@ export default function RequestsPage() {
           {COLUMNS.map((col) => {
             const tickets = list.filter((t) => t.status === col.key);
             return (
-              <div key={col.key} className="kanban__col">
+              <div
+                key={col.key}
+                className={`kanban__col${dragOverCol === col.key ? ' kanban__col--drop' : ''}`}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  e.dataTransfer.dropEffect = 'move';
+                  if (dragOverCol !== col.key) setDragOverCol(col.key);
+                }}
+                onDragLeave={(e) => {
+                  if (!e.currentTarget.contains(e.relatedTarget as Node)) setDragOverCol(null);
+                }}
+                onDrop={(e) => onDropToColumn(e, col.key)}
+              >
                 <div className="kanban__head" style={{ borderTopColor: col.accent }}>
                   <span className="kanban__head-label">{col.label}</span>
                   <span className="kanban__head-count">{tickets.length}</span>
@@ -160,6 +182,7 @@ export default function RequestsPage() {
             />
             <Column
               header="Заявка"
+              style={{ minWidth: '420px', width: '420px' }}
               body={(r: DecoratedTicket) => (
                 <div className="table-title">
                   {r.emergency && <span className="table-title__dot" />}
@@ -198,14 +221,6 @@ export default function RequestsPage() {
                   <span className="table-unassigned">— не назначен</span>
                 )
               }
-            />
-            <Column
-              header="SLA"
-              body={(r: DecoratedTicket) => (
-                <span className="nowrap" style={{ color: r.slaColorValue, fontWeight: 600 }}>
-                  {r.sla}
-                </span>
-              )}
             />
           </DataTable>
         </div>

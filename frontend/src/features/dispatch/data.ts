@@ -29,10 +29,9 @@ export const PRIO: Record<TicketPriority, PriorityMeta> = {
 };
 
 export const COLUMNS: { key: TicketStatus; label: string; accent: string }[] = [
-  { key: 'new', label: 'Новая', accent: 'var(--hd-blue-500)' },
-  { key: 'assigned', label: 'Назначена', accent: 'var(--hd-amber-500)' },
-  { key: 'in_progress', label: 'В работе', accent: 'var(--hd-green-500)' },
-  { key: 'waiting', label: 'Ожидает', accent: 'var(--hd-neutral-400)' },
+  { key: 'new', label: 'Новая', accent: 'var(--hd-blue-400)' },
+  { key: 'assigned', label: 'Назначена', accent: 'var(--hd-blue-700)' },
+  { key: 'in_progress', label: 'В работе', accent: 'var(--hd-amber-500)' },
   { key: 'done', label: 'Выполнена', accent: 'var(--hd-green-600)' },
 ];
 

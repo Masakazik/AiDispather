@@ -61,7 +61,7 @@ const TICKETS: SeedTicket[] = [
   { number: 10247, title: 'Шлагбаум не открывается по брелоку', description: 'Шлагбаум на въезде перестал реагировать на брелоки.', category: 'Доступ', priority: RequestPriority.MEDIUM, status: RequestStatus.IN_PROGRESS, source: RequestSource.MAX, bKey: 'rb1', apt: 'кв. 30', resident: 'Тарасова А.К.', phone: '+7 903 412-09-55', assignee: 'Зайцев О.Н.' },
   { number: 10248, title: 'Холодно в подъезде — нет отопления', description: 'В подъезде холодно, батареи не греют.', category: 'Отопление', priority: RequestPriority.HIGH, status: RequestStatus.ASSIGNED, source: RequestSource.TELEGRAM, bKey: 'ap3', apt: 'кв. 101', resident: 'Козлова А.М.', phone: '+7 919 222-54-76', assignee: 'Громов П.О.' },
   { number: 10250, title: 'Неверные начисления за март', description: 'В квитанции за март указана сумма больше обычной.', category: 'Начисления', priority: RequestPriority.LOW, status: RequestStatus.NEW, source: RequestSource.WIDGET, bKey: 'ap1', apt: 'кв. 61', resident: 'Киселёва Ю.С.', phone: '+7 925 661-09-88', assignee: null },
-  { number: 10251, title: 'Вопрос по оплате за капремонт', description: 'Не приходит квитанция на капитальный ремонт.', category: 'Начисления', priority: RequestPriority.LOW, status: RequestStatus.WAITING, source: RequestSource.PHONE, bKey: 'ap1', apt: 'кв. 48', resident: 'Попов В.С.', phone: '+7 926 884-30-91', assignee: 'Морозова Д.А.' },
+  { number: 10251, title: 'Вопрос по оплате за капремонт', description: 'Не приходит квитанция на капитальный ремонт.', category: 'Начисления', priority: RequestPriority.LOW, status: RequestStatus.ASSIGNED, source: RequestSource.PHONE, bKey: 'ap1', apt: 'кв. 48', resident: 'Попов В.С.', phone: '+7 926 884-30-91', assignee: 'Морозова Д.А.' },
   { number: 10253, title: 'Затопление — прорыв трубы кв. 55', description: 'Прорвало трубу в ванной, вода льётся к соседям снизу.', category: 'Авария', priority: RequestPriority.CRITICAL, status: RequestStatus.IN_PROGRESS, source: RequestSource.TELEGRAM, bKey: 'sp2', apt: 'кв. 55', resident: 'Николаев Р.В.', phone: '+7 926 890-12-34', assignee: 'Громов П.О.' },
   { number: 10255, title: 'Просьба установить доп. камеру', description: 'Просьба рассмотреть установку доп. камеры у детской площадки.', category: 'Безопасность', priority: RequestPriority.LOW, status: RequestStatus.NEW, source: RequestSource.WIDGET, bKey: 'ap1', apt: 'кв. 7', resident: 'Васильева Н.О.', phone: '+7 927 330-88-21', assignee: null },
   { number: 10256, title: 'Спасибо, дверь больше не скрипит!', description: 'Спасибо мастеру, входная дверь починена.', category: 'Обратная связь', priority: RequestPriority.LOW, status: RequestStatus.DONE, source: RequestSource.TELEGRAM, bKey: 'ap2', apt: 'кв. 22', resident: 'Новикова М.А.', phone: '+7 915 770-22-18', assignee: 'Кузьмин Д.В.' },
@@ -179,6 +179,8 @@ async function main(): Promise<void> {
 
   // Backfill any legacy rows created before multi-tenancy to the demo company.
   await prisma.serviceRequest.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
+  // The "Ожидает" column was removed — move any waiting requests to "Назначена".
+  await prisma.serviceRequest.updateMany({ where: { status: RequestStatus.WAITING }, data: { status: RequestStatus.ASSIGNED } });
   await prisma.employee.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
   await prisma.task.updateMany({ where: { companyId: null }, data: { companyId: COMPANY_ID } });
 

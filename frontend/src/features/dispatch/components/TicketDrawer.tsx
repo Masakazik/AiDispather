@@ -9,6 +9,10 @@ import { PRIO, STATUS, TICKETS } from '../data';
 import { decorateTicket, ticketComments, ticketTimeline } from '../selectors';
 import type { TicketStatus } from '@/types/dispatch';
 import { displayName } from '@/utils/format';
+import { cn } from '@/utils/cn';
+
+/** Pipeline stages shown as a stepper in the ticket drawer. */
+const STAGE_KEYS: TicketStatus[] = ['new', 'assigned', 'in_progress', 'done'];
 
 export function TicketDrawer() {
   const openTicketId = useDispatchStore((s) => s.openTicketId);
@@ -35,9 +39,8 @@ export function TicketDrawer() {
   const timeline = ticketTimeline(raw);
   const comments = ticketComments(raw);
 
-  const changeStatus = async (status: TicketStatus, closeAfter = false) => {
-    if (isLive) await updateStatus(raw.id, status);
-    if (closeAfter) closeTicket();
+  const changeStatus = async (status: TicketStatus) => {
+    if (isLive && status !== raw.status) await updateStatus(raw.id, status);
   };
 
   const assignItems: MenuItem[] = staff
@@ -63,7 +66,6 @@ export function TicketDrawer() {
     { label: 'Житель', value: t.resident },
     { label: 'Телефон', value: t.phone || '—' },
     { label: 'Создана', value: t.created },
-    { label: 'SLA', value: t.sla || '—', color: t.slaColorValue },
   ];
 
   const header = (
@@ -84,19 +86,31 @@ export function TicketDrawer() {
   );
 
   const footer = (
-    <>
+    <div className="ticket-actions">
+      <div className="ticket-stages" role="group" aria-label="Этап заявки">
+        {STAGE_KEYS.map((s) => (
+          <button
+            key={s}
+            type="button"
+            className={cn('ticket-stages__btn', t.status === s && 'ticket-stages__btn--active')}
+            disabled={!isLive}
+            aria-pressed={t.status === s}
+            onClick={() => void changeStatus(s)}
+          >
+            {STATUS[s].label}
+          </button>
+        ))}
+      </div>
       <Menu model={assignItems} popup ref={assignMenuRef} />
-      <Button variant="secondary" onClick={(e) => assignMenuRef.current?.toggle(e)}>
-        Назначить
+      <Button
+        variant="secondary"
+        className="ticket-actions__assign"
+        onClick={(e) => assignMenuRef.current?.toggle(e)}
+        disabled={!isLive}
+      >
+        {t.assignee ? `Исполнитель: ${t.assignee}` : 'Назначить исполнителя'}
       </Button>
-      <Button variant="primary" onClick={() => void changeStatus('in_progress')}>
-        В работу
-      </Button>
-      <div style={{ flex: 1 }} />
-      <Button variant="ghost" onClick={() => void changeStatus('done', true)}>
-        Закрыть заявку
-      </Button>
-    </>
+    </div>
   );
 
   return (
