@@ -6,6 +6,7 @@ import {
   type MaxChatMessage,
   type MaxChatThread,
 } from '@/services/max-chats.service';
+import { onRealtimeEvent } from '@/services/realtime.service';
 
 type ChatSort = 'latest' | 'building_asc' | 'building_desc';
 
@@ -58,8 +59,10 @@ export default function ChatsPage() {
 
   useEffect(() => {
     void loadThreads();
-    const timer = window.setInterval(() => void loadThreads(false), 10000);
-    return () => window.clearInterval(timer);
+    const offChats = onRealtimeEvent('chats.updated', () => {
+      void loadThreads(false);
+    });
+    return () => offChats();
   }, []);
 
   const filteredThreads = useMemo<MaxChatThread[]>(() => {

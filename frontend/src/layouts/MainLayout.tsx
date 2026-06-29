@@ -5,8 +5,10 @@ import { Topbar } from './components/Topbar';
 import { ALL_SCREENS } from '@/constants/navigation';
 import { TicketDrawer } from '@/features/dispatch/components/TicketDrawer';
 import { ResidentDrawer } from '@/features/dispatch/components/ResidentDrawer';
+import { useAuthStore } from '@/store/auth.store';
 import { useRequestsStore } from '@/store/requests.store';
 import { useTasksStore } from '@/store/tasks.store';
+import { connectRealtime, disconnectRealtime, onRealtimeEvent } from '@/services/realtime.service';
 
 function useCurrentScreen() {
   const { pathname } = useLocation();
@@ -19,9 +21,9 @@ function useCurrentScreen() {
 
 /** Authenticated application shell: responsive sidebar + topbar + content. */
 export function MainLayout() {
-  const REQUESTS_POLL_MS = 10_000;
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const screen = useCurrentScreen();
+  const token = useAuthStore((s) => s.token);
   const fetchRequests = useRequestsStore((s) => s.fetch);
   const fetchTasks = useTasksStore((s) => s.fetch);
 
@@ -31,13 +33,21 @@ export function MainLayout() {
     void fetchTasks();
   }, [fetchRequests, fetchTasks]);
 
-  // Keep requests in sync with backend updates (bot/manual/other users)
-  // so new tickets appear without a page reload.
+  // Live updates: subscribe to websocket events from backend.
   useEffect(() => {
-    const timer = window.setInterval(() => {
+    const socket = connectRealtime(token);
+    if (!socket) return;
+    const offRequests = onRealtimeEvent('requests.updated', () => {
       void fetchRequests();
-    }, REQUESTS_POLL_MS);
+    });
+    return () => {
+      offRequests();
+      disconnectRealtime();
+    };
+  }, [token, fetchRequests]);
 
+  // Focus/visibility fallback refresh.
+  useEffect(() => {
     const onFocus = () => void fetchRequests();
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
@@ -49,7 +59,6 @@ export function MainLayout() {
     document.addEventListener('visibilitychange', onVisibility);
 
     return () => {
-      window.clearInterval(timer);
       window.removeEventListener('focus', onFocus);
       document.removeEventListener('visibilitychange', onVisibility);
     };

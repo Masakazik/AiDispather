@@ -10,6 +10,7 @@ import {
   type NotificationJobData,
 } from '../../queue/queue.constants';
 import type { AppConfig } from '../../config/configuration';
+import { RealtimeService } from '../../realtime/realtime.service';
 import { CreateServiceRequestDto } from './dto/create-service-request.dto';
 import { UpdateServiceRequestDto } from './dto/update-service-request.dto';
 import { QueryServiceRequestDto } from './dto/query-service-request.dto';
@@ -39,6 +40,7 @@ export class ServiceRequestsService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    private readonly realtime: RealtimeService,
     config: ConfigService<AppConfig, true>,
     @InjectQueue(NOTIFICATIONS_QUEUE) private readonly notifications: Queue<NotificationJobData>,
   ) {
@@ -132,6 +134,7 @@ export class ServiceRequestsService implements OnModuleInit {
       requestId: request.id,
       message: `New request #${request.number}: ${request.title}`,
     });
+    this.realtime.emitRequestsUpdated(request.companyId ?? null);
     return request;
   }
 
@@ -155,19 +158,26 @@ export class ServiceRequestsService implements OnModuleInit {
         message: `Status changed to ${dto.status}`,
       });
     }
+    this.realtime.emitRequestsUpdated(request.companyId ?? null);
     return request;
   }
 
   async remove(id: string, companyId: string | null): Promise<void> {
-    await this.ensureExists(id, companyId);
+    const existing = await this.ensureExists(id, companyId);
     await this.prisma.serviceRequest.delete({ where: { id } });
     await this.redis.del(`${CACHE_PREFIX}${id}`);
+    this.realtime.emitRequestsUpdated(existing.companyId ?? null);
   }
 
-  private async ensureExists(id: string, companyId: string | null): Promise<void> {
-    const count = await this.prisma.serviceRequest.count({
+  private async ensureExists(
+    id: string,
+    companyId: string | null,
+  ): Promise<{ id: string; companyId: string | null }> {
+    const existing = await this.prisma.serviceRequest.findFirst({
       where: { id, companyId: companyId ?? undefined },
+      select: { id: true, companyId: true },
     });
-    if (count === 0) throw new NotFoundException('Service request not found');
+    if (!existing) throw new NotFoundException('Service request not found');
+    return existing;
   }
 }

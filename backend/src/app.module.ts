@@ -17,6 +17,7 @@ import { DocumentsModule } from './modules/documents/documents.module';
 import { BotModule } from './modules/bot/bot.module';
 import { HealthModule } from './health/health.module';
 import { LoggerModule } from './common/logger/logger.module';
+import { RealtimeModule } from './realtime/realtime.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
@@ -30,6 +31,7 @@ import { AllExceptionsFilter } from './common/filters/http-exception.filter';
       validate: validateEnv,
     }),
     LoggerModule,
+    RealtimeModule,
     PrismaModule,
     RedisModule,
     QueueModule,

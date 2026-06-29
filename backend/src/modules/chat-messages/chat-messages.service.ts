@@ -3,6 +3,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppLogger } from '../../common/logger/app-logger.service';
 import { PrismaService } from '../../prisma/prisma.service';
+import { RealtimeService } from '../../realtime/realtime.service';
 import { AiResponse } from '../ai/schemas/ai-response.schema';
 import { YandexAiService } from '../ai/yandex-ai.service';
 import { CRM_ADAPTER, CrmAdapterPort } from '../bot-integration/crm/crm-adapter.port';
@@ -21,6 +22,7 @@ export class ChatMessagesService {
     @Inject(CRM_ADAPTER) private readonly crmAdapter: CrmAdapterPort,
     private readonly maxApiService: MaxApiService,
     private readonly prisma: PrismaService,
+    private readonly realtime: RealtimeService,
     private readonly logger: AppLogger,
   ) {
     this.isDevMode = this.configService.get<string>('NODE_ENV', 'production') === 'development';
@@ -127,7 +129,7 @@ export class ChatMessagesService {
   }): Promise<ChatMessage> {
     const companyId = params.companyId ?? (await this.resolveDefaultCompanyId());
     const buildingId = companyId ? await this.resolveBuildingIdForChat(companyId, params.chatId) : null;
-    return this.prisma.chatMessage.create({
+    const row = await this.prisma.chatMessage.create({
       data: {
         companyId,
         buildingId,
@@ -139,6 +141,8 @@ export class ChatMessagesService {
         direction: ChatMessageDirection.OUTGOING,
       },
     });
+    this.realtime.emitChatsUpdated(companyId ?? null);
+    return row;
   }
 
   async markDeletedByExternalMessageId(
@@ -146,7 +150,7 @@ export class ChatMessagesService {
     chatId: string,
     messageId: string,
   ): Promise<void> {
-    await this.prisma.chatMessage.updateMany({
+    const result = await this.prisma.chatMessage.updateMany({
       where: {
         companyId: companyId ?? undefined,
         externalChatId: chatId,
@@ -154,6 +158,9 @@ export class ChatMessagesService {
       },
       data: { deletedAt: new Date() },
     });
+    if (result.count > 0) {
+      this.realtime.emitChatsUpdated(companyId ?? null);
+    }
   }
 
   async handleUpdate(rawUpdate: MaxUpdateDto | Record<string, unknown>): Promise<void> {
@@ -314,6 +321,7 @@ export class ChatMessagesService {
         direction: ChatMessageDirection.INCOMING,
       },
     });
+    this.realtime.emitChatsUpdated(companyId);
     return { duplicate: false, companyId };
   }
 
